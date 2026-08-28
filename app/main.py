@@ -8,7 +8,7 @@ from app.models import products as product_model
 
 from app.routers import categories as categories_router
 from app.routers import products as products_router
-from app.routers import users as reg_login_router
+#from app.routers import users as reg_login_router
 
 Base.metadata.create_all(bind=engine)
 
