@@ -8,7 +8,7 @@ from app.models import products as product_model
 
 from app.routers import categories as categories_router
 from app.routers import products as products_router
-#from app.routers import users as reg_login_router
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -24,8 +24,6 @@ app.add_middleware(
 
 app.include_router(categories_router.router)
 app.include_router(products_router.router)
-app.include_router(reg_login_router.router)
-
 
 @app.get("/")
 def root():

@@ -26,7 +26,8 @@ def create_product(prod: ProductCreate, db: Session = Depends(get_db)):
         prod_description=prod.prod_description,
         prod_color=prod.prod_color,
         prod_price=prod.prod_price,
-        available_stock=prod.available_stock
+        available_stock=prod.available_stock,
+        image_url=prod.image_url
     )
     db.add(prod_db)
     db.commit()
@@ -37,18 +38,21 @@ def create_product(prod: ProductCreate, db: Session = Depends(get_db)):
 def get_product(prodid: int, db: Session = Depends(get_db)):
     prod_db = db.query(ProductModel).filter(ProductModel.id == prodid).first()
     if prod_db is None:
-        raise HTTPException(status_code=404, detail="product not found")
+        raise HTTPException(status_code=404, detail="Product not found")
     return prod_db
 
 @router.get("/", response_model=List[ProductResponse])
-def get_all_products(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(ProductModel).offset(skip).limit(limit).all()
+def get_all_products(skip: int = 0, limit: int = 100, category_id: int = None, db: Session = Depends(get_db)):
+    query = db.query(ProductModel)
+    if category_id:
+        query = query.filter(ProductModel.category_id == category_id)
+    return query.offset(skip).limit(limit).all()
 
 @router.put("/{prodid}", response_model=ProductResponse)
 def update_prod(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
     prod_db = db.query(ProductModel).filter(ProductModel.id == prodid).first()
     if prod_db is None:
-        raise HTTPException(status_code=404, detail="product not found")
+        raise HTTPException(status_code=404, detail="Product not found")
 
     prod_db.prod_name = prod.prod_name
     prod_db.category_id = prod.category_id
@@ -56,8 +60,18 @@ def update_prod(prodid: int, prod: ProductCreate, db: Session = Depends(get_db))
     prod_db.prod_color = prod.prod_color
     prod_db.prod_price = prod.prod_price
     prod_db.available_stock = prod.available_stock
+    prod_db.image_url = prod.image_url
 
     db.add(prod_db)
     db.commit()
     db.refresh(prod_db)
     return prod_db
+
+@router.delete("/{prodid}")
+def delete_product(prodid: int, db: Session = Depends(get_db)):
+    prod_db = db.query(ProductModel).filter(ProductModel.id == prodid).first()
+    if prod_db is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+    db.delete(prod_db)
+    db.commit()
+    return {"message": "Product deleted successfully"}
