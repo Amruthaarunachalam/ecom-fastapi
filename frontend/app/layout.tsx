@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import Categories from './categories/page';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'E-Commerce Dashboard',
   description: 'FastAPI & Next.js Management System',
 };
+
 
 export default function RootLayout({
   children,
@@ -34,9 +37,12 @@ export default function RootLayout({
               <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Management
               </div>
-              <a href="#" className="flex items-center px-3 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
-                 Products & Categories
-              </a>
+              <Link href="/" className="flex items-center px-3 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
+                 Products 
+              </Link>
+              <Link href="/categories" className="flex items-center px-3 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
+              Categories
+              </Link>
             </nav>
           </aside>
 

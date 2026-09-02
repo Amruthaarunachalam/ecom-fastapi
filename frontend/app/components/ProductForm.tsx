@@ -75,7 +75,7 @@ export default function ProductForm({
         </select>
         <input
           type="number"
-          placeholder="Price ($) *"
+          placeholder="Price (₹) *"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           required
