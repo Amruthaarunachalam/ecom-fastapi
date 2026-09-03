@@ -36,3 +36,24 @@ def get_category(catid: int, db: Session = Depends(get_db)):
 @router.get("/", response_model=List[CategoryResponse])  
 def get_all_category(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(CategoryModel).offset(skip).limit(limit).all()  
+
+@router.put("/{catid}",response_model=CategoryResponse)
+def update_category(catid:int,cat:CategoryCreate,db:Session=Depends(get_db)):
+    cat_db = db.query(CategoryModel).filter(CategoryModel.id == catid).first()  
+    if cat_db is None:
+        raise HTTPException(status_code=404, detail="category not found")
+    cat_db.cat_name=cat.cat_name
+    cat_db.cat_description=cat.cat_description
+    db.add(cat_db)
+    db.commit()
+    db.refresh(cat_db)
+    return cat_db
+
+@router.delete("/{catid}")
+def delete_category(catid:int,db:Session=Depends(get_db)):
+    cat_db = db.query(CategoryModel).filter(CategoryModel.id == catid).first()  
+    if cat_db is None:
+        raise HTTPException(status_code=404, detail="category not found")
+    db.delete(cat_db)
+    db.commit()
+    return {"message":"the category deleted succesfully"}

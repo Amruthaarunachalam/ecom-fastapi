@@ -3,6 +3,7 @@
 import CategoryCard from "../components/CategoryCard";
 import CategoryForm from "../components/CategoryForm";
 import { useState, useEffect, FormEvent } from "react";
+import Modal from "../components/modal";
 
 
 interface Category {
@@ -12,6 +13,9 @@ interface Category {
 }
 
 export default function Categories() {
+  const [isOpen,setIsOpen]=useState(false);
+  const [deletingId,setDeletingId]=useState<number | null>(null);
+
   const [CategoryName, setCategoryName] = useState<string>('');
   const [description, setDescription] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -41,6 +45,7 @@ export default function Categories() {
     setEditingId(null);
     setCategoryName('');
     setDescription('');
+    setIsOpen(false);
   };
 
  
@@ -48,6 +53,7 @@ export default function Categories() {
     setEditingId(c.id);
     setCategoryName(c.cat_name);
     setDescription(c.cat_description || '');
+    setIsOpen(true);
   };
 
  
@@ -79,10 +85,13 @@ export default function Categories() {
       console.log('Error saving categories:', err);
     }
   };
+const handleDeleteClick=(id:number)=>{
+    setDeletingId(id);
+    setIsOpen(true);
+  }
 
-  // 6. Delete Category Handler
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this Category?')) return;
+    if (!deletingId) return;
     try {
       await fetch(`${BASE_URL}/category/${id}`, { method: 'DELETE' });
       fetchCategories();
@@ -93,7 +102,33 @@ export default function Categories() {
 
   return (
     <div className="space-y-8">
-      <CategoryForm
+         <button
+      onClick={()=>{resetForm();setIsOpen(true);}}
+      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        + Add new Category
+      </button>
+        <Modal 
+        isOpen={isOpen}
+        onClose={()=>setIsOpen(false)}
+        title={deletingId?"Delete Category":editingId?"Edit Category":"Add Category"}>
+      {deletingId?(
+             <div>
+              <p>Are you sure you want to delete this Category?</p>
+             <div className="flex justify-end space-x-3 pt-2">
+              <button 
+              onClick={()=>handleDelete(deletingId)}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+              Confirm
+              </button><span>
+              <button 
+              onClick={()=>{setIsOpen(false);resetForm()}}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                  Cancel
+                  </button></span>
+                  </div>
+             </div>):
+      
+      (<CategoryForm
         editingId={editingId}
         CategoryName={CategoryName}
         setCategoryName={setCategoryName}
@@ -101,7 +136,8 @@ export default function Categories() {
         setDescription={setDescription}
         onSubmit={handleSubmit}
         onReset={resetForm}
-      />
+      />)}
+      </Modal>
 
      
       <div>
@@ -117,7 +153,7 @@ export default function Categories() {
                 key={c.id}
                 category={c} 
                 onEdit={handleEdit}
-                onDelete={handleDelete}
+                onDelete={handleDeleteClick}
               />
             ))}
           </div>
