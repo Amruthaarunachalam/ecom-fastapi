@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
 from app.schema.category import CategoryCreate, CategoryResponse
-from app.models.category import CategoryModel
+
+from app.services.category_services import creating_category,check_get_category,check_get_all_category,update_category,delete_category
 
 router = APIRouter(
     prefix="/category",
@@ -19,41 +20,24 @@ def get_db():
         db.close()
 
 @router.post("/", response_model=CategoryResponse)
-def create_category(cat: CategoryCreate, db: Session = Depends(get_db)):  # Fixed: removed schema.
-    cat_db = CategoryModel(cat_name=cat.cat_name, cat_description=cat.cat_description)  # Fixed: removed models.
-    db.add(cat_db)
-    db.commit()
-    db.refresh(cat_db)
-    return cat_db
+def create_category_endpoint(cat: CategoryCreate, db: Session = Depends(get_db)):
+    return creating_category(cat,db)
+
 
 @router.get("/{catid}", response_model=CategoryResponse)
-def get_category(catid: int, db: Session = Depends(get_db)):
-    cat_db = db.query(CategoryModel).filter(CategoryModel.id == catid).first()  
-    if cat_db is None:
-        raise HTTPException(status_code=404, detail="category not found")
-    return cat_db
+def get_category_endpoint(catid: int, db: Session = Depends(get_db)):
+    return check_get_category(catid,db)
+
 
 @router.get("/", response_model=List[CategoryResponse])  
-def get_all_category(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return db.query(CategoryModel).offset(skip).limit(limit).all()  
+def get_all_category_endpoint(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return check_get_all_category(db,skip,limit)
+
 
 @router.put("/{catid}",response_model=CategoryResponse)
-def update_category(catid:int,cat:CategoryCreate,db:Session=Depends(get_db)):
-    cat_db = db.query(CategoryModel).filter(CategoryModel.id == catid).first()  
-    if cat_db is None:
-        raise HTTPException(status_code=404, detail="category not found")
-    cat_db.cat_name=cat.cat_name
-    cat_db.cat_description=cat.cat_description
-    db.add(cat_db)
-    db.commit()
-    db.refresh(cat_db)
-    return cat_db
+def updating_category(catid:int,cat:CategoryCreate,db:Session=Depends(get_db)):
+    return update_category(catid,cat,db)
 
 @router.delete("/{catid}")
-def delete_category(catid:int,db:Session=Depends(get_db)):
-    cat_db = db.query(CategoryModel).filter(CategoryModel.id == catid).first()  
-    if cat_db is None:
-        raise HTTPException(status_code=404, detail="category not found")
-    db.delete(cat_db)
-    db.commit()
-    return {"message":"the category deleted succesfully"}
+def deleting_category(catid:int,db:Session=Depends(get_db)):
+    return delete_category(catid,db)
