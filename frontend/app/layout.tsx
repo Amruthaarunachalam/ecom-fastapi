@@ -32,15 +32,15 @@ export default function RootLayout({
 
         <div className="flex pt-16 min-h-screen">
           {/* Sidebar */}
-          <aside className="fixed top-16 bottom-0 left-0 w-64 bg-white border-r border-gray-200 p-4 z-10">
+          <aside className="fixed top-16 bottom-0 left-0 w-64 bg-slate-600 border-r border-gray-200 p-4 z-10">
             <nav className="space-y-1">
-              <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <div className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wider">
                 Management
               </div>
-              <Link href="/" className="flex items-center px-3 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
+              <Link href="/" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110 hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
                  Products 
               </Link>
-              <Link href="/categories" className="flex items-center px-3 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg">
+              <Link href="/categories" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110  hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
               Categories
               </Link>
             </nav>

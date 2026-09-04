@@ -14,7 +14,7 @@ interface CategoryCardProps {
 
 export default function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
         <div className="h-44 bg-gray-100 relative">
           {category.cat_name && (
@@ -36,13 +36,13 @@ export default function CategoryCard({ category, onEdit, onDelete }: CategoryCar
       <div className="p-4 pt-0 flex space-x-2">
         <button
           onClick={() => onEdit(category)}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors"
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
         >
           Edit
         </button>
         <button
           onClick={() => onDelete(category.id)}
-          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors"
+          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
         >
           Delete
         </button>

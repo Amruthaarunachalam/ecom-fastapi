@@ -162,12 +162,13 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
         selectedCategory={selectedCategory}
         onSelectCategory={handleCategoryFilter}
       />
+      <div className="flex justify-end">
       <button
       onClick={()=>{resetForm();setIsOpen(true);}}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+      className="px-4 py-2 bg-blue-600 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
         + Add new Products
       </button>
-
+     </div>
      <Modal
      isOpen={isOpen}
      onClose={()=>setIsOpen(false)}
@@ -177,13 +178,13 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
               <p>Are you sure you want to delete this product?</p>
              <div className="flex justify-end space-x-3 pt-2">
               <button 
-              onClick={()=>handleDelete(deletingId)}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+              onClick={()=>{handleDelete(deletingId);setIsOpen(false);resetForm()}}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer hover:scale-105">
               Confirm
               </button><span>
               <button 
               onClick={()=>{setIsOpen(false);resetForm()}}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 cursor-pointer hover:scale-105">
                   Cancel
                   </button></span>
                   </div>
@@ -212,7 +213,7 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
 
       {/* 3. Product Grid displaying Product Cards */}
       <div>
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Products Catalog</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 uppercase font-sans">Products Catalog</h2>
         {products.length === 0 ? (
           <div className="p-8 bg-white rounded-xl text-center text-gray-500">
             No products found for this category.

@@ -19,14 +19,14 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
         <div className="h-44 bg-gray-100 relative">
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.prod_name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
@@ -35,7 +35,7 @@ export default function ProductCard({ product, onEdit, onDelete }: ProductCardPr
           )}
         </div>
         <div className="p-4 space-y-2">
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-start rounded-md">
             <h3 className="font-bold text-gray-900 text-lg">{product.prod_name}</h3>
             <span className="text-green-600 font-bold">₹{product.prod_price}</span>
           </div>
@@ -52,13 +52,13 @@ export default function ProductCard({ product, onEdit, onDelete }: ProductCardPr
       <div className="p-4 pt-0 flex space-x-2">
         <button
           onClick={() => onEdit(product)}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors"
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
         >
           Edit
         </button>
         <button
           onClick={() => onDelete(product.id)}
-          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors"
+          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
         >
           Delete
         </button>
