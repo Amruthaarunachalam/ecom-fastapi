@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
 from app.schema.products import ProductCreate, ProductResponse
-from app.models.products import ProductModel
+
+from app.services.product_services import creating_products,check_get_product,check_get_all_product,update_prod,delete_product
 
 router = APIRouter(
     prefix="/products",
@@ -19,59 +20,22 @@ def get_db():
         db.close()
 
 @router.post("/", response_model=ProductResponse)
-def create_product(prod: ProductCreate, db: Session = Depends(get_db)):
-    prod_db = ProductModel(
-        prod_name=prod.prod_name,
-        category_id=prod.category_id,
-        prod_description=prod.prod_description,
-        prod_color=prod.prod_color,
-        prod_price=prod.prod_price,
-        available_stock=prod.available_stock,
-        image_url=prod.image_url
-    )
-    db.add(prod_db)
-    db.commit()
-    db.refresh(prod_db)
-    return prod_db
+def create_product_endpoint(prod: ProductCreate, db: Session = Depends(get_db)):
+    return creating_products(prod,db)
+
 
 @router.get("/{prodid}", response_model=ProductResponse)
-def get_product(prodid: int, db: Session = Depends(get_db)):
-    prod_db = db.query(ProductModel).filter(ProductModel.id == prodid).first()
-    if prod_db is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return prod_db
+def get_product_endpoint(prodid: int, db: Session = Depends(get_db)):
+    return check_get_product(prodid,db)
 
 @router.get("/", response_model=List[ProductResponse])
-def get_all_products(skip: int = 0, limit: int = 100, category_id: int = None, db: Session = Depends(get_db)):
-    query = db.query(ProductModel)
-    if category_id:
-        query = query.filter(ProductModel.category_id == category_id)
-    return query.offset(skip).limit(limit).all()
+def get_all_products_endpoint(skip: int = 0, limit: int = 100, category_id: int = None, db: Session = Depends(get_db)):
+    return check_get_all_product(db,skip,limit,category_id)
 
 @router.put("/{prodid}", response_model=ProductResponse)
-def update_prod(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
-    prod_db = db.query(ProductModel).filter(ProductModel.id == prodid).first()
-    if prod_db is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-
-    prod_db.prod_name = prod.prod_name
-    prod_db.category_id = prod.category_id
-    prod_db.prod_description = prod.prod_description
-    prod_db.prod_color = prod.prod_color
-    prod_db.prod_price = prod.prod_price
-    prod_db.available_stock = prod.available_stock
-    prod_db.image_url = prod.image_url
-
-    db.add(prod_db)
-    db.commit()
-    db.refresh(prod_db)
-    return prod_db
+def updating_products(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
+    return update_prod(prodid,prod,db)
 
 @router.delete("/{prodid}")
-def delete_product(prodid: int, db: Session = Depends(get_db)):
-    prod_db = db.query(ProductModel).filter(ProductModel.id == prodid).first()
-    if prod_db is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    db.delete(prod_db)
-    db.commit()
-    return {"message": "Product deleted successfully"}
+def deleting_products(prodid: int, db: Session = Depends(get_db)):
+    return delete_product(prodid,db)

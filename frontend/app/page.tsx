@@ -4,6 +4,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import CategoryFilter from './components/CategoryFilter';
 import ProductForm from './components/ProductForm';
 import ProductCard from './components/ProductCard';
+import Modal from './components/modal';
 
 interface Category {
   id: number;
@@ -23,6 +24,9 @@ interface Product {
 }
 
 export default function Dashboard() {
+const [isOpen,setIsOpen]=useState(false);
+const [deletingId,setDeletingId]=useState<number | null>(null);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | 'ALL'>('ALL');
@@ -77,15 +81,18 @@ export default function Dashboard() {
     setSelectedCategory(catId);
     fetchProducts(catId);
   };
+  
 
   const resetForm = () => {
     setEditingId(null);
+    setDeletingId(null);
     setProdName('');
     setPrice('');
     setStock('');
     setColor('');
     setImageUrl('');
     setDescription('');
+    setIsOpen(false);
   };
 
   const handleEdit = (p: Product) => {
@@ -97,6 +104,7 @@ export default function Dashboard() {
     setColor(p.prod_color || '');
     setImageUrl(p.image_url || '');
     setDescription(p.prod_description || '');
+    setIsOpen(true);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -126,14 +134,19 @@ export default function Dashboard() {
         });
       }
       resetForm();
+      setIsOpen(false);
       fetchProducts();
     } catch (err) {
       console.error('Error saving product:', err);
     }
   };
+  const handleDeleteClick=(id:number)=>{
+    setDeletingId(id);
+    setIsOpen(true);
+  }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+    if (!deletingId) return;
     try {
       await fetch(`${BASE_URL}/products/${id}`, { method: 'DELETE' });
       fetchProducts();
@@ -144,15 +157,39 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      {/* 1. Category Filter Component */}
       <CategoryFilter
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={handleCategoryFilter}
       />
-
-      {/* 2. Product Form Component */}
-      <ProductForm
+      <div className="flex justify-end">
+      <button
+      onClick={()=>{resetForm();setIsOpen(true);}}
+      className="px-4 py-2 bg-blue-600 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
+        + Add new Products
+      </button>
+     </div>
+     <Modal
+     isOpen={isOpen}
+     onClose={()=>setIsOpen(false)}
+     title={deletingId?"Delete product":editingId?"Edit Products":"Add Products"}>
+      {deletingId?(
+             <div>
+              <p>Are you sure you want to delete this product?</p>
+             <div className="flex justify-end space-x-3 pt-2">
+              <button 
+              onClick={()=>{handleDelete(deletingId);setIsOpen(false);resetForm()}}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer hover:scale-105">
+              Confirm
+              </button><span>
+              <button 
+              onClick={()=>{setIsOpen(false);resetForm()}}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 cursor-pointer hover:scale-105">
+                  Cancel
+                  </button></span>
+                  </div>
+             </div>):
+      (<ProductForm
         categories={categories}
         editingId={editingId}
         prodName={prodName}
@@ -171,11 +208,12 @@ export default function Dashboard() {
         setDescription={setDescription}
         onSubmit={handleSubmit}
         onReset={resetForm}
-      />
+      />)}
+      </Modal>
 
       {/* 3. Product Grid displaying Product Cards */}
       <div>
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Products Catalog</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 uppercase font-sans">Products Catalog</h2>
         {products.length === 0 ? (
           <div className="p-8 bg-white rounded-xl text-center text-gray-500">
             No products found for this category.
@@ -187,7 +225,7 @@ export default function Dashboard() {
                 key={p.id}
                 product={p}
                 onEdit={handleEdit}
-                onDelete={handleDelete}
+                onDelete={handleDeleteClick}
               />
             ))}
           </div>
