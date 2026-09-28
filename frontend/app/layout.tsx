@@ -37,7 +37,10 @@ export default function RootLayout({
               <div className="px-3 py-2 text-xs font-semibold text-white uppercase tracking-wider">
                 Management
               </div>
-              <Link href="/" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110 hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
+                <Link href="/" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110 hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
+                 Dashboard
+              </Link>
+              <Link href="/products" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110 hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
                  Products 
               </Link>
               <Link href="/categories" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110  hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
