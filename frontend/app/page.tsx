@@ -1,236 +1,102 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
-import CategoryFilter from './components/CategoryFilter';
-import ProductForm from './components/ProductForm';
-import ProductCard from './components/ProductCard';
+import UserForm from './components/UsersForm';
 import Modal from './components/modal';
+import SuccessModal from './components/successModal';
 
-interface Category {
+interface User {
   id: number;
-  cat_name: string;
-  cat_description?: string;
-}
-
-interface Product {
-  id: number;
-  prod_name: string;
-  category_id: number;
-  prod_description?: string;
-  prod_color?: string;
-  prod_price: number;
-  available_stock?: number;
-  image_url?: string;
+  name: string;
+  phone_no: string;
+  email: string;
 }
 
 export default function Dashboard() {
-const [isOpen,setIsOpen]=useState(false);
-const [deletingId,setDeletingId]=useState<number | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
+  const [email, setEmail] = useState('');
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | 'ALL'>('ALL');
-
-  // Form states
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [prodName, setProdName] = useState('');
-  const [categoryId, setCategoryId] = useState<number>(0);
-  const [price, setPrice] = useState('');
-  const [stock, setStock] = useState('');
-  const [color, setColor] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [description, setDescription] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const BASE_URL = 'http://127.0.0.1:8000';
 
-  useEffect(() => {
-    fetchCategories();
-    fetchProducts();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/category/`);
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-        if (data.length > 0 && categoryId === 0) setCategoryId(data[0].id);
-      }
-    } catch (err) {
-      console.error('Failed fetching categories:', err);
-    }
-  };
-
-  const fetchProducts = async (catId?: number | 'ALL') => {
-    try {
-      const targetCat = catId !== undefined ? catId : selectedCategory;
-      let url = `${BASE_URL}/products/`;
-      if (targetCat !== 'ALL') url += `?category_id=${targetCat}`;
-
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setProducts(data);
-      }
-    } catch (err) {
-      console.error('Failed fetching products:', err);
-    }
-  };
-
-  const handleCategoryFilter = (catId: number | 'ALL') => {
-    setSelectedCategory(catId);
-    fetchProducts(catId);
-  };
-  
-
   const resetForm = () => {
     setEditingId(null);
-    setDeletingId(null);
-    setProdName('');
-    setPrice('');
-    setStock('');
-    setColor('');
-    setImageUrl('');
-    setDescription('');
+    setName('');
+    setPhoneNo('');
+    setEmail('');
     setIsOpen(false);
-  };
-
-  const handleEdit = (p: Product) => {
-    setEditingId(p.id);
-    setProdName(p.prod_name);
-    setCategoryId(p.category_id);
-    setPrice(p.prod_price.toString());
-    setStock(p.available_stock?.toString() || '');
-    setColor(p.prod_color || '');
-    setImageUrl(p.image_url || '');
-    setDescription(p.prod_description || '');
-    setIsOpen(true);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const payload = {
-      prod_name: prodName,
-      category_id: Number(categoryId),
-      prod_price: parseFloat(price),
-      available_stock: stock ? parseInt(stock) : 0,
-      prod_color: color,
-      image_url: imageUrl,
-      prod_description: description,
+      name: name,
+      phone_no: phoneNo,
+      email: email,
     };
 
     try {
-      if (editingId) {
-        await fetch(`${BASE_URL}/products/${editingId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await fetch(`${BASE_URL}/products/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
-      resetForm();
-      setIsOpen(false);
-      fetchProducts();
-    } catch (err) {
-      console.error('Error saving product:', err);
-    }
-  };
-  const handleDeleteClick=(id:number)=>{
-    setDeletingId(id);
-    setIsOpen(true);
-  }
+      const url = editingId ? `${BASE_URL}/users/${editingId}` : `${BASE_URL}/users/`;
+      const method = editingId ? 'PUT' : 'POST';
 
-  const handleDelete = async (id: number) => {
-    if (!deletingId) return;
-    try {
-      await fetch(`${BASE_URL}/products/${id}`, { method: 'DELETE' });
-      fetchProducts();
+      const res = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        resetForm(); // Safely resets form and closes modal on success
+        setIsOpen(false)
+        setIsSuccess(true)
+      } else {
+        console.error('Failed to save user:', res.statusText);
+      }
     } catch (err) {
-      console.error('Error deleting product:', err);
+      console.error('Error saving user:', err);
     }
   };
 
   return (
-    <div className="space-y-8">
-      <CategoryFilter
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={handleCategoryFilter}
-      />
-      <div className="flex justify-end">
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <button
-      onClick={()=>{resetForm();setIsOpen(true);}}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
-        + Add new Products
+        onClick={() => {
+          resetForm();
+          setIsOpen(true);
+        }}
+        className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105 transition-all"
+      >
+        Sign Up
       </button>
-     </div>
-     <Modal
-     isOpen={isOpen}
-     onClose={()=>setIsOpen(false)}
-     title={deletingId?"Delete product":editingId?"Edit Products":"Add Products"}>
-      {deletingId?(
-             <div>
-              <p>Are you sure you want to delete this product?</p>
-             <div className="flex justify-end space-x-3 pt-2">
-              <button 
-              onClick={()=>{handleDelete(deletingId);setIsOpen(false);resetForm()}}
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer hover:scale-105">
-              Confirm
-              </button><span>
-              <button 
-              onClick={()=>{setIsOpen(false);resetForm()}}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 cursor-pointer hover:scale-105">
-                  Cancel
-                  </button></span>
-                  </div>
-             </div>):
-      (<ProductForm
-        categories={categories}
-        editingId={editingId}
-        prodName={prodName}
-        setProdName={setProdName}
-        categoryId={categoryId}
-        setCategoryId={setCategoryId}
-        price={price}
-        setPrice={setPrice}
-        stock={stock}
-        setStock={setStock}
-        color={color}
-        setColor={setColor}
-        imageUrl={imageUrl}
-        setImageUrl={setImageUrl}
-        description={description}
-        setDescription={setDescription}
-        onSubmit={handleSubmit}
-        onReset={resetForm}
-      />)}
-      </Modal>
 
-      {/* 3. Product Grid displaying Product Cards */}
-      <div>
-        <h2 className="text-2xl font-bold mb-4 text-gray-800 uppercase font-sans">Products Catalog</h2>
-        {products.length === 0 ? (
-          <div className="p-8 bg-white rounded-xl text-center text-gray-500">
-            No products found for this category.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                onEdit={handleEdit}
-                onDelete={handleDeleteClick}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={editingId ? "Edit User" : "Sign Up"}
+      >
+        <UserForm
+          editingId={editingId}
+          Name={name}
+          setName={setName}
+          Phone_no={phoneNo}
+          setPhone_no={setPhoneNo}
+          Email={email}
+          setEmail={setEmail}
+          onSubmit={handleSubmit}
+          onReset={resetForm}
+        />
+      </Modal>
+      <SuccessModal
+     isOpen={isSuccess}
+     onClose={() => setIsSuccess(false)}
+>
+ 
+</SuccessModal>
     </div>
   );
 }
