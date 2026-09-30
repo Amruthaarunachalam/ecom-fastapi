@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import CategoryFilter from '../components/CategoryFilter';
 import ProductForm from '../components/ProductForm';
 import ProductCard from '../components/ProductCard';
@@ -42,6 +43,9 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
   const [description, setDescription] = useState('');
 
   const BASE_URL = 'http://127.0.0.1:8000';
+   const USER_ID = 1
+
+   const router=useRouter()
 
   useEffect(() => {
     fetchCategories();
@@ -154,6 +158,22 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
       console.error('Error deleting product:', err);
     }
   };
+  const handleAddToCart=async(id:number)=>{
+        try{
+          const res=await fetch(`${BASE_URL}/cart/${USER_ID}/items`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({user_id:USER_ID,prod_id:id,quantity:1})
+          })
+          const data=await res.json()
+          if (res.ok){
+             router.push('/cart')
+             return data
+          }
+        }catch(err){
+          console.log("error add the product to cart",err)
+        }
+  }
 
   return (
     <div className="space-y-8">
@@ -226,6 +246,7 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
                 product={p}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
+                onAddToCart={handleAddToCart}
               />
             ))}
           </div>
