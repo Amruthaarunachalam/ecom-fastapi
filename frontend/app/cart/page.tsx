@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import CartItemCard from "../components/CartItemCard"
+import SuccessModal from "../components/successModal"
 
 interface CartItems {
   prod_id: number
@@ -19,6 +20,7 @@ interface Carts {
 
 export default function Cart() {
   const [cart, setCart] = useState<Carts>({ items: [], subtotal: 0 })
+  const [isSuccess, setIsSuccess] = useState(false);
   const BASE_URL = 'http://127.0.0.1:8000'
   const USER_ID = 1
 
@@ -69,6 +71,27 @@ export default function Cart() {
     }
   }
 
+  const handlePlaceOrder = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/orders/${USER_ID}`, { method: 'POST' })
+    console.log('order status:', res.status)
+
+    const data = await res.json()
+    console.log('order response:', data)
+
+    if (res.ok) {
+      setCart({ items: [], subtotal: 0 })
+      console.log('order placed, opening modal')
+      setIsSuccess(true)
+    } else {
+      alert(typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail))
+    }
+  } catch (err) {
+    console.error('error placing an order', err)
+    alert('Could not place the order. Check the console and the backend terminal.')
+  }
+}
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold uppercase text-gray-500">Your Cart</h2>
@@ -88,11 +111,23 @@ export default function Cart() {
             />
           ))}
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 flex justify-end items-center">
-            <h3 className="text-xl font-bold">Subtotal: ₹{cart.subtotal}</h3>
-          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 flex justify-end items-center gap-4">
+           <h3 className="text-xl font-bold">Subtotal: ₹{cart.subtotal}</h3>
+            <button
+              onClick={handlePlaceOrder}
+             className="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer"
+             >
+              Proceed to order
+            </button>
+           </div>
         </>
       )}
+      
+       <SuccessModal 
+          isOpen={isSuccess}
+          successMsg="Order Placed Successfully!!"
+          onClose={() => setIsSuccess(false)}
+          />
     </div>
   )
 }
