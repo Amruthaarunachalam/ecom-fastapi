@@ -49,6 +49,9 @@ export default function RootLayout({
               <Link href="/cart" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110  hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
               Cart
               </Link>
+              <Link href="/orders" className="flex items-center px-3 py-2.5 text-md font-medium text-white hover:scale-110  hover:bg-blue-400 text-shadow-amber-50 active:bg-sky-700">
+              Orders
+              </Link>
             </nav>
           </aside>
 
