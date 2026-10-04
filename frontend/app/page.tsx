@@ -92,6 +92,7 @@ export default function Dashboard() {
         />
       </Modal>
       <SuccessModal
+      successMsg='User Created Successfully!'
      isOpen={isSuccess}
      onClose={() => setIsSuccess(false)}
 >
