@@ -22,3 +22,6 @@ def create_cart_item(user_id: int, data: CartAdd, db: Session):
 
 def get_user_cart_items(user_id: int, db: Session):
     return db.query(CartItemModel).filter(CartItemModel.user_id == user_id).all()
+
+def clear_cart(user_id:int,db:Session):
+    db.query(CartItemModel).filter(CartItemModel.user_id == user_id).delete(synchronize_session=False)
