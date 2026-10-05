@@ -1,28 +1,22 @@
 'use client';
 
+'use client';
+
 import { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { getProducts, createProduct, updateProduct, deleteProducts } from '../lib/api/products';
+import { getCategories } from '../lib/api/categories';
+import type { Product } from '../lib/api/products';
+import type { Category } from '../lib/api/categories';
+import { addToCart } from '../lib/api/cart';
+import { USER_ID } from '../lib/config';
+
 import CategoryFilter from '../components/CategoryFilter';
 import ProductForm from '../components/ProductForm';
 import ProductCard from '../components/ProductCard';
 import Modal from '../components/modal';
 
-interface Category {
-  id: number;
-  cat_name: string;
-  cat_description?: string;
-}
-
-interface Product {
-  id: number;
-  prod_name: string;
-  category_id: number;
-  prod_description?: string;
-  prod_color?: string;
-  prod_price: number;
-  available_stock?: number;
-  image_url?: string;
-}
 
 export default function Dashboard() {
 const [isOpen,setIsOpen]=useState(false);
@@ -42,8 +36,6 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
 
-  const BASE_URL = 'http://127.0.0.1:8000';
-   const USER_ID = 1
 
    const router=useRouter()
 
@@ -52,34 +44,24 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
     fetchProducts();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/category/`);
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-        if (data.length > 0 && categoryId === 0) setCategoryId(data[0].id);
-      }
-    } catch (err) {
-      console.error('Failed fetching categories:', err);
-    }
-  };
+ const fetchCategories = async () => {
+  try {
+    const data = await getCategories();
+    setCategories(data);
+    if (data.length > 0 && categoryId === 0) setCategoryId(data[0].id);
+  } catch (err) {
+    console.error('Failed fetching categories:', err);
+  }
+};
 
-  const fetchProducts = async (catId?: number | 'ALL') => {
-    try {
-      const targetCat = catId !== undefined ? catId : selectedCategory;
-      let url = `${BASE_URL}/products/`;
-      if (targetCat !== 'ALL') url += `?category_id=${targetCat}`;
-
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setProducts(data);
-      }
-    } catch (err) {
-      console.error('Failed fetching products:', err);
-    }
-  };
+const fetchProducts = async (catId?: number | 'ALL') => {
+  try {
+    const targetCat = catId !== undefined ? catId : selectedCategory;
+    setProducts(await getProducts(targetCat));
+  } catch (err) {
+    console.error('Failed fetching products:', err);
+  }
+};
 
   const handleCategoryFilter = (catId: number | 'ALL') => {
     setSelectedCategory(catId);
@@ -112,68 +94,52 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
   };
 
   const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const payload = {
-      prod_name: prodName,
-      category_id: Number(categoryId),
-      prod_price: parseFloat(price),
-      available_stock: stock ? parseInt(stock) : 0,
-      prod_color: color,
-      image_url: imageUrl,
-      prod_description: description,
-    };
-
-    try {
-      if (editingId) {
-        await fetch(`${BASE_URL}/products/${editingId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await fetch(`${BASE_URL}/products/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
-      resetForm();
-      setIsOpen(false);
-      fetchProducts();
-    } catch (err) {
-      console.error('Error saving product:', err);
-    }
+  e.preventDefault();
+  const payload = {
+    prod_name: prodName,
+    category_id: Number(categoryId),
+    prod_price: parseFloat(price),
+    available_stock: stock ? parseInt(stock) : 0,
+    prod_color: color,
+    image_url: imageUrl,
+    prod_description: description,
   };
+
+  try {
+    if (editingId) {
+      await updateProduct(editingId, payload);
+    } else {
+      await createProduct(payload);
+    }
+    resetForm();
+    fetchProducts();
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
+
   const handleDeleteClick=(id:number)=>{
     setDeletingId(id);
     setIsOpen(true);
   }
 
-  const handleDelete = async (id: number) => {
-    if (!deletingId) return;
-    try {
-      await fetch(`${BASE_URL}/products/${id}`, { method: 'DELETE' });
-      fetchProducts();
-    } catch (err) {
-      console.error('Error deleting product:', err);
-    }
-  };
-  const handleAddToCart=async(id:number)=>{
-        try{
-          const res=await fetch(`${BASE_URL}/cart/${USER_ID}/items`,{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({user_id:USER_ID,prod_id:id,quantity:1})
-          })
-          const data=await res.json()
-          if (res.ok){
-             router.push('/cart')
-             return data
-          }
-        }catch(err){
-          console.log("error add the product to cart",err)
-        }
+ const handleDelete = async (id: number) => {
+  if (!deletingId) return;
+  try {
+    await deleteProducts(id);
+    fetchProducts();
+  } catch (err: any) {
+    alert(err.message);
   }
+};
+  const handleAddToCart = async (id: number) => {
+  try {
+    await addToCart(USER_ID, id, 1);
+    router.push('/cart');
+  } catch (err: any) {
+    alert(err.message);   
+  }
+};
 
   return (
     <div className="space-y-8">
