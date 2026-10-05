@@ -15,9 +15,10 @@ interface ProductCardProps {
   product: Product;
   onEdit: (product: Product) => void;
   onDelete: (id: number) => void;
+  onAddToCart:(id:number)=>void
 }
 
-export default function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
+export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: ProductCardProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
@@ -61,6 +62,10 @@ export default function ProductCard({ product, onEdit, onDelete }: ProductCardPr
           className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
         >
           Delete
+        </button>
+        <button onClick={()=>onAddToCart(product.id)}
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105">
+            Add To Cart
         </button>
       </div>
     </div>

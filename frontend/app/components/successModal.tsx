@@ -3,9 +3,11 @@
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  successMsg:string;
 }
 
-export default function SuccessModal({ isOpen, onClose }: ModalProps) {
+export default function SuccessModal({ isOpen, onClose,successMsg }: ModalProps) {
+  console.log('SuccessModal isOpen =', isOpen)
   if (!isOpen) return null;
 
   return (
@@ -31,14 +33,8 @@ export default function SuccessModal({ isOpen, onClose }: ModalProps) {
 
         
         <h3 className="text-lg font-semibold text-gray-800">
-          User Created Successfully!
-        </h3>
-        <p className="text-sm text-gray-500">
-          The user details have been saved to the database.
-        </p>
-
-      
-       
+          {successMsg}
+        </h3>   
       </div>
     </div>
   );
