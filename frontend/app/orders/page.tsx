@@ -1,75 +1,48 @@
 'use client'
-import { useState,useEffect } from "react"
-interface OrderItems{
-    prod_id:number,
-    quantity:number,
-    price:number
 
-}
-interface Orders{
-    id:number,
-    user_id:number,
-    status:string,
-    total_amount:number,
-    created_at:string,
-    items:OrderItems[],  
-}
-interface Product{
-    id:number,
-    prod_name:string,
-    image_url?:string
-}
-export default function OrderSummary(){
-    const [order,setOrder]=useState<Orders[]>([]);
-    const [products,setProducts]=useState<Product[]>([])
+import { useState, useEffect } from 'react'
+import { getUserOrders } from '../lib/api/orders'
+import { getProducts } from '../lib/api/products'
+import type { Order } from '../lib/api/orders'
+import type { Product } from '../lib/api/products'
 
-    const BASE_URL = 'http://127.0.0.1:8000'
-    const USER_ID = 1
+export default function OrderSummary() {
+  const [orders, setOrders] = useState<Order[]>([])
+  const [products, setProducts] = useState<Product[]>([])
 
-    useEffect(() => {
+  useEffect(() => {
     fetchOrders()
     fetchProducts()
   }, [])
 
-    const fetchOrders=async()=>{
-        try{
-            const res=await fetch(`${BASE_URL}/orders/${USER_ID}`)
-            const data=await res.json()
-            if(res.ok){
-                setOrder(data)
-            }
-        }
-        catch (err){
-            console.log("error fetching orders",err)
-        }
+  const fetchOrders = async () => {
+    try {
+      setOrders(await getUserOrders())
+    } catch (err) {
+      console.log('error fetching orders', err)
     }
+  }
 
-    const fetchProducts=async()=>{
-        try{
-            const res=await fetch(`${BASE_URL}/products/`)
-            const data=await res.json()
-            if(res.ok){
-                setProducts(data)
-            }
-        }
-        catch (err){
-            console.log("unable to fetch products",err)
-        }
+  const fetchProducts = async () => {
+    try {
+      setProducts(await getProducts())
+    } catch (err) {
+      console.log('unable to fetch products', err)
     }
-    const findProduct = (prod_id: number) => products.find((p) => p.id === prod_id)
+  }
 
- 
+  const findProduct = (prod_id: number) => products.find((p) => p.id === prod_id)
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold uppercase text-gray-500">Your Orders</h2>
 
-      {order.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="p-8 bg-white rounded-xl text-center text-gray-500">
           No orders yet.
         </div>
       ) : (
-        order.map((order) => (
+        orders.map((order) => (
           <div key={order.id} className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
             <div className="flex justify-between text-sm text-gray-500">
               <span className="font-semibold">Order #{order.id}</span>
@@ -106,4 +79,3 @@ export default function OrderSummary(){
     </div>
   )
 }
-    
