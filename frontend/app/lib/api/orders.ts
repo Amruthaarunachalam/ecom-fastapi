@@ -15,8 +15,8 @@ export interface Order {
   items: OrderItem[]
 }
 
-export const placeOrder = (userId: number) =>
-  request<Order>(`/orders/${userId}`, { method: 'POST' })
+export const placeOrder = () =>
+  request<Order>(`/orders/`, { method: 'POST' })
 
-export const getUserOrders = (userId: number) =>
-  request<Order[]>(`/orders/${userId}`)
+export const getUserOrders = () =>
+  request<Order[]>(`/orders/`)
