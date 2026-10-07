@@ -14,20 +14,20 @@ export interface Cart {
   subtotal: number
 }
 
-export const getCart = (userId: number) =>
-  request<Cart>(`/cart/${userId}`)
+export const getCart = () =>
+  request<Cart>(`/cart/`)
 
-export const addToCart = (userId: number, productId: number, quantity = 1) =>
-  request(`/cart/${userId}/items`, {
+export const addToCart = ( productId: number, quantity = 1) =>
+  request(`/cart/items`, {
     method: 'POST',
     body: JSON.stringify({ prod_id: productId, quantity }),
   })
 
-export const updateCartQuantity = (userId: number, productId: number, quantity: number) =>
-  request<Cart>(`/cart/${userId}/items`, {
+export const updateCartQuantity = ( productId: number, quantity: number) =>
+  request<Cart>(`/cart/items`, {
     method: 'PUT',
     body: JSON.stringify({ prod_id: productId, quantity }),
   })
 
-export const removeCartItem = (userId: number, productId: number) =>
-  request<Cart>(`/cart/${userId}/items/${productId}`, { method: 'DELETE' })
+export const removeCartItem = ( productId: number) =>
+  request<Cart>(`/cart/items/${productId}`, { method: 'DELETE' })
