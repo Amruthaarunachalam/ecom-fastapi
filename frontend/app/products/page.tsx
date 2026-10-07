@@ -134,7 +134,7 @@ const fetchProducts = async (catId?: number | 'ALL') => {
 };
   const handleAddToCart = async (id: number) => {
   try {
-    await addToCart(USER_ID, id, 1);
+    await addToCart( id, 1);
     router.push('/cart');
   } catch (err: any) {
     alert(err.message);   
