@@ -14,6 +14,7 @@ from app.routers import products as products_router
 from app.routers import user as user_router
 from app.routers import cart as cart_router
 from app.routers import orders as orders_router
+from app.routers import auth as auth_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -32,6 +33,7 @@ app.include_router(products_router.router)
 app.include_router(user_router.router)
 app.include_router(cart_router.router)
 app.include_router(orders_router.router)
+app.include_router(auth_router.router)
 
 @app.get("/")
 def root():

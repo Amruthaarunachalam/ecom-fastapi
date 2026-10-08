@@ -8,3 +8,4 @@ class UserModel(Base):
     name = Column(String, nullable=False)
     phone_no = Column(String, nullable=False) 
     email = Column(String, unique=True, nullable=False)  
+    hashed_password = Column(String, nullable=True)

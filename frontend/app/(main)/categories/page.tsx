@@ -1,16 +1,14 @@
 'use client';
 
-import CategoryCard from "../components/CategoryCard";
-import CategoryForm from "../components/CategoryForm";
+import CategoryCard from "../../components/CategoryCard";
+import CategoryForm from "../../components/CategoryForm";
 import { useState, useEffect, FormEvent } from "react";
-import Modal from "../components/modal";
+import Modal from "../../components/modal";
+
+import { getCategories, createCategory, updateCategory, deleteCategory } from '../../lib/api/categories';
+import type { Category } from '../../lib/api/categories';
 
 
-interface Category {
-  id: number;
-  cat_name: string;
-  cat_description?: string;
-}
 
 export default function Categories() {
   const [isOpen,setIsOpen]=useState(false);
@@ -21,7 +19,7 @@ export default function Categories() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  const BASE_URL = 'http://127.0.0.1:8000';
+ 
 
   useEffect(() => {
     fetchCategories();
@@ -29,16 +27,12 @@ export default function Categories() {
 
   
   const fetchCategories = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/category/`);
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
-    } catch (err) {
-      console.error('Failed fetching categories:', err);
-    }
-  };
+  try {
+    setCategories(await getCategories());
+  } catch (err) {
+    console.error('Failed fetching categories:', err);
+  }
+};
 
  
   const resetForm = () => {
@@ -58,48 +52,41 @@ export default function Categories() {
   };
 
  
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault(); 
+ const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
 
-    const payload = {
-      cat_name: CategoryName,
-      cat_description: description,
-    };
-
-    try {
-      if (editingId) {
-        await fetch(`${BASE_URL}/category/${editingId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        await fetch(`${BASE_URL}/category/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-      }
-      resetForm();
-      fetchCategories();
-    } catch (err) {
-      console.log('Error saving categories:', err);
-    }
+  const payload = {
+    cat_name: CategoryName,
+    cat_description: description,
   };
+
+  try {
+    if (editingId) {
+      await updateCategory(editingId, payload);
+    } else {
+      await createCategory(payload);
+    }
+    resetForm();
+    fetchCategories();
+  } catch (err: any) {
+    console.error(err.message);
+  }
+};
+
 const handleDeleteClick=(id:number)=>{
     setDeletingId(id);
     setIsOpen(true);
   }
 
-  const handleDelete = async (id: number) => {
-    if (!deletingId) return;
-    try {
-      await fetch(`${BASE_URL}/category/${id}`, { method: 'DELETE' });
-      fetchCategories();
-    } catch (err) {
-      console.error('Error deleting category:', err);
-    }
-  };
+ const handleDelete = async (id: number) => {
+  if (!deletingId) return;
+  try {
+    await deleteCategory(id);
+    fetchCategories();
+  } catch (err: any) {
+    console.error(err.message);
+  }
+};
 
   return (
     <div className="space-y-8">

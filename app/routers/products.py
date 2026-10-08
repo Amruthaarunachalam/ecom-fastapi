@@ -7,17 +7,12 @@ from app.schema.products import ProductCreate, ProductResponse
 
 from app.services.product_services import creating_products,check_get_product,check_get_all_product,update_prod,delete_product
 
+from ..dependencies import get_current_user,get_db
 router = APIRouter(
     prefix="/products",
-    tags=["products"]
+    tags=["products"],
+    dependencies=[Depends(get_current_user)]
 )
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=ProductResponse)
 def create_product_endpoint(prod: ProductCreate, db: Session = Depends(get_db)):
