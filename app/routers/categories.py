@@ -7,17 +7,13 @@ from app.schema.category import CategoryCreate, CategoryResponse
 
 from app.services.category_services import creating_category,check_get_category,check_get_all_category,update_category,delete_category
 
+from ..dependencies import get_current_user,get_db
 router = APIRouter(
     prefix="/category",
-    tags=["category"]
+    tags=["category"],
+    dependencies=[Depends(get_current_user)]
 )
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.post("/", response_model=CategoryResponse)
 def create_category_endpoint(cat: CategoryCreate, db: Session = Depends(get_db)):
