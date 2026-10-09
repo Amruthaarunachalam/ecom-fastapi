@@ -10,7 +10,7 @@ import { getCategories } from '../../lib/api/categories';
 import type { Product } from '../../lib/api/products';
 import type { Category } from '../../lib/api/categories';
 import { addToCart } from '../../lib/api/cart';
-import { USER_ID } from '../../lib/config';
+
 
 import CategoryFilter from '../../components/CategoryFilter';
 import ProductForm from '../../components/ProductForm';
@@ -151,7 +151,7 @@ const fetchProducts = async (catId?: number | 'ALL') => {
       <div className="flex justify-end">
       <button
       onClick={()=>{resetForm();setIsOpen(true);}}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
+      className="px-4 py-2 bg-purple-500 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
         + Add new Products
       </button>
      </div>

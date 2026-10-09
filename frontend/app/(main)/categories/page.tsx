@@ -93,7 +93,7 @@ const handleDeleteClick=(id:number)=>{
       <div className="flex justify-end">
          <button
       onClick={()=>{resetForm();setIsOpen(true);}}
-      className="px-4 py-2 bg-blue-600 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
+      className="px-4 py-2 bg-purple-400 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
         + Add new Category
       </button>
       </div>

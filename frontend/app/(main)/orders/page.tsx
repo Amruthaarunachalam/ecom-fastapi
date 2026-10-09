@@ -46,7 +46,7 @@ export default function OrderSummary() {
           <div key={order.id} className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
             <div className="flex justify-between text-sm text-gray-500">
               <span className="font-semibold">Order #{order.id}</span>
-              <span>{new Date(order.created_at).toLocaleDateString()}</span>
+              <span>placed order at:{new Date(order.created_at).toLocaleDateString()}</span>
               <span className="capitalize">{order.status}</span>
             </div>
 
@@ -70,7 +70,7 @@ export default function OrderSummary() {
               )
             })}
 
-            <div className="border-t pt-3 text-right text-lg font-bold">
+            <div className=" pt-3 text-right text-lg font-bold">
               Total: ₹{order.total_amount}
             </div>
           </div>
