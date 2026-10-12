@@ -14,7 +14,7 @@ interface CategoryCardProps {
 
 export default function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
+    <div className="bg-white rounded-xl border  dark:border-gray-800  dark:bg-gray-700 border-gray-200 dark:hover:border-gray-500 dark:hover:shadow-lg dark:hover:shadow-white/10  overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
         <div className="h-44 bg-gray-100 relative">
           {category.cat_name && (
@@ -26,9 +26,9 @@ export default function CategoryCard({ category, onEdit, onDelete }: CategoryCar
         <div className="p-4 space-y-2">
         
           {category.cat_description ? (
-            <p className="text-gray-500 text-sm line-clamp-2">{category.cat_description}</p>
+            <p className="text-gray-500 dark:text-gray-200 text-sm line-clamp-2">{category.cat_description}</p>
           ):(
-            <p className="text-gray-500 text-sm line-clamp-2">No description available</p>
+            <p className="text-gray-500 dark:text-gray-200 text-sm line-clamp-2">No description available</p>
           )}
         </div>
       </div>

@@ -14,7 +14,7 @@ export const getUser=()=>{
     return request<User>('/users/me')
 }
 export const updateUser=(payload:UserPayload)=>{
-    request<User>('/users/me',{
+   return request<User>('/users/me',{
         method:'PUT',
         body:JSON.stringify(payload)
     })

@@ -33,7 +33,7 @@ export default function UserForm({
   const mismatch = confirmPassword !== '' && password !== confirmPassword
   const tooShort = password !== '' && password.length < 8
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-800 dark:border">
       
       <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input
@@ -42,7 +42,8 @@ export default function UserForm({
           value={Name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 
+          focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400  dark:bg-gray-800 "
         />
          <input
           type="text"
@@ -50,7 +51,8 @@ export default function UserForm({
           value={Phone_no}
           onChange={(e) => setPhone_no(e.target.value)}
           required
-          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 
+          focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400  dark:bg-gray-800 "
         />
          <input
           type="text"
@@ -58,7 +60,8 @@ export default function UserForm({
           value={Email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none 
+          focus:ring-2 focus:ring-purple-400 focus:border-purple-400  dark:bg-gray-800 "
         />
          <input
          type="password"
@@ -68,7 +71,8 @@ export default function UserForm({
          required
          minLength={8}
          autoComplete="new-password"
-         className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+         className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none 
+         focus:ring-2 focus:ring-purple-400 focus:border-purple-400  dark:bg-gray-800 "
            />
          <input
           type="password"
@@ -77,9 +81,10 @@ export default function UserForm({
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
           autoComplete="new-password"
-          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="h-10 px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white placeholder:text-gray-400 shadow-sm transition-all duration-150 hover:border-gray-400 focus:outline-none 
+          focus:ring-2 focus:ring-purple-400 focus:border-purple-400  dark:bg-gray-800 "
         />
-        <p className={`md:col-span-3 text-xs ${tooShort ? 'text-red-600' : 'text-gray-500'}`}>
+        <p className={`md:col-span-3 text-xs ${tooShort ? 'text-red-600' : 'text-gray-500 dark:text-gray-100'}`}>
             Password must be at least 8 characters
          </p>
 
@@ -91,7 +96,7 @@ export default function UserForm({
         <button
         type="submit"
         disabled={mismatch || tooShort}
-        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all duration-150 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-purple-400 hover:bg-purple-400 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-all duration-150 hover:scale-[1.03] hover:shadow-md active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
        >
            Register
        </button>
