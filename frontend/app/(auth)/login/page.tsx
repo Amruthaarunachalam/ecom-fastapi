@@ -31,7 +31,7 @@ export default function LoginPage(){
        <div className="p-6" >
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
      
-      <div className="w-fit max-w-4xl rounded-md bg-white p-6 shadow-xl">
+      <div className="w-fit max-w-4xl rounded-md dark:bg-gray-800 p-6 shadow-xl">
         
         <div className="mb-4 flex items-center justify-between gap-4">
           <h2 className="text-xl font-bold">Login</h2>

@@ -18,6 +18,9 @@ export default function UserProfile({ isOpen, onClose, user }: ProfileProps) {
     localStorage.removeItem('access_token')
     router.replace('/login')
   }
+  const mydetails=()=>{
+    router.push('/me')
+  }
 
   return (
     <>
@@ -33,9 +36,12 @@ export default function UserProfile({ isOpen, onClose, user }: ProfileProps) {
             ✕
           </button>
         </div>
-
-        <div className="space-y-1 text-md text-gray-600">
+        <div>
+        <button className="space-y-1 text-md text-gray-600"
+        onClick={mydetails}
+        >
          <p>My details</p>
+        </button>
         </div>
       <div>
         <button

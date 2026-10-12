@@ -44,16 +44,24 @@ export default function OrderSummary() {
       ) : (
         orders.map((order) => (
           <div key={order.id} className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+              <div className="font-bold">
+                {new Date(order.created_at).toLocaleDateString(
+                'en-GB',{
+                  day:'numeric',
+                  month:'short',
+                  year:'numeric'
+                }
+              )}
+              </div>
             <div className="flex justify-between text-sm text-gray-500">
               <span className="font-semibold">Order #{order.id}</span>
-              <span>placed order at:{new Date(order.created_at).toLocaleDateString()}</span>
               <span className="capitalize">{order.status}</span>
             </div>
 
             {order.items.map((item) => {
               const prod = findProduct(item.prod_id)
               return (
-                <div key={item.prod_id} className="flex items-center gap-4 border-t pt-3">
+                <div key={item.prod_id} className="flex items-center gap-4 pt-3">
                   {prod?.image_url ? (
                     <img src={prod.image_url} alt={prod.prod_name} className="w-16 h-16 object-contain bg-gray-100" />
                   ) : (
