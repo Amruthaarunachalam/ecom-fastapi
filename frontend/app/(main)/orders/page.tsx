@@ -6,13 +6,29 @@ import { getProducts } from '../../lib/api/products'
 import type { Order } from '../../lib/api/orders'
 import type { Product } from '../../lib/api/products'
 
+import { WS_URL } from '@/app/lib/config'
+
 export default function OrderSummary() {
   const [orders, setOrders] = useState<Order[]>([])
   const [products, setProducts] = useState<Product[]>([])
 
   useEffect(() => {
+    const token=localStorage.getItem('access_token')
+    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
+    ws.onopen=()=>{
+      console.log("websocket connected succesfully")
+    }
+    ws.onerror=(error)=>{
+      console.log("error connecting websocket",error)
+    }
+    ws.onmessage=(event)=>{
+      console.log("message",event.data)
+      fetchOrders()
+      fetchProducts()
+    }
     fetchOrders()
     fetchProducts()
+    return () =>ws.close()
   }, [])
 
   const fetchOrders = async () => {

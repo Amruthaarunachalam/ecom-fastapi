@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import CartItemCard from "../../components/CartItemCard"
 import SuccessModal from "../../components/successModal"
 
-import { USER_ID } from '../../lib/config'
+import { WS_URL } from '../../lib/config'
 import { getCart, updateCartQuantity, removeCartItem } from '../../lib/api/cart'
 import { placeOrder } from '../../lib/api/orders'
 import type { Cart } from '../../lib/api/cart'
@@ -17,7 +17,21 @@ export default function Cart() {
  
 
   useEffect(() => {
+    const token=localStorage.getItem('access_token')
+    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
+    ws.onopen=()=>{
+      console.log("websocket connected sucessfully")
+    }
+    ws.onerror=(error)=>{
+      console.log("error occured",error)
+    }
+    ws.onmessage=(event)=>{
+      console.log("message",event.data)
+       fetchCart()
+    }
     fetchCart()
+    return () => ws.close() 
+    
   }, [])
 
  const fetchCart = async () => {

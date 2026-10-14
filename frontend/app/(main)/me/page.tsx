@@ -5,6 +5,8 @@ import MyDetails from '@/app/components/userDetails';
 
 import type { User } from '@/app/lib/api/user';
 import { getUser, updateUser } from '@/app/lib/api/user';
+import { WS_URL } from '@/app/lib/config';
+
 
 export default function Details() {
   const [user, setUser] = useState<User | null>(null);
@@ -17,7 +19,20 @@ export default function Details() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    const token=localStorage.getItem('access_token')
+    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
+     ws.onopen=()=>{
+      console.log("websocket connected successfully")
+    }
+    ws.onerror=(error)=>{
+      console.log('websocket error',error)
+    }
+    ws.onmessage=(event)=>{
+      console.log("message",event.data)
+      loadUser();
+    }
     loadUser();
+    return ()=>ws.close()
   }, []);
 
   const fillForm = (u: User) => {
