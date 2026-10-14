@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
+from ..ws_manager import manager
 from app.schema.products import ProductCreate, ProductResponse
 
 from app.services.product_services import creating_products,check_get_product,check_get_all_product,update_prod,delete_product
@@ -15,7 +16,8 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=ProductResponse)
-def create_product_endpoint(prod: ProductCreate, db: Session = Depends(get_db)):
+async def create_product_endpoint(prod: ProductCreate, db: Session = Depends(get_db)):
+    await manager.broadcast_all("product created") 
     return creating_products(prod,db)
 
 
@@ -28,9 +30,11 @@ def get_all_products_endpoint(skip: int = 0, limit: int = 100, category_id: int 
     return check_get_all_product(db,skip,limit,category_id)
 
 @router.put("/{prodid}", response_model=ProductResponse)
-def updating_products(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
+async def updating_products(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
+    await manager.broadcast_all("product has been updated")
     return update_prod(prodid,prod,db)
 
 @router.delete("/{prodid}")
-def deleting_products(prodid: int, db: Session = Depends(get_db)):
+async def deleting_products(prodid: int, db: Session = Depends(get_db)):
+    await manager.broadcast_all("product has been deleted")
     return delete_product(prodid,db)
