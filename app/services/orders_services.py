@@ -7,9 +7,9 @@ from app.repository.orders_repo import get_order, get_orders_by_user
 from app.repository.cart_repo import get_user_cart_items, clear_cart
 from app.repository.user_repo import get_user
 from app.repository.products_repo import get_product
+from app.repository.address_repo import get_address
 
-
-def place_order(user_id: int, db: Session):
+def place_order(user_id: int,address_id:int, db: Session):
     user_db = get_user(user_id, db)
     if user_db is None:
         raise HTTPException(status_code=404, detail=f'The user of id {user_id} is not found')
@@ -17,9 +17,19 @@ def place_order(user_id: int, db: Session):
     cart_items = get_user_cart_items(user_id, db)
     if not cart_items:
         raise HTTPException(status_code=400, detail='The cart is empty')
+    
+    address_db = get_address(address_id, db)
+    if address_db is None or address_db.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Address not found")
+
+    shipping_text = (
+        f"{user_db.name}, {user_db.phone_no}, "
+        f"{address_db.Address_line1}, {address_db.city}, "
+        f"{address_db.state} - {address_db.pincode}"
+    )
 
     try:
-        order_db = OrderModel(user_id=user_id, total_amount=0)
+        order_db = OrderModel(user_id=user_id, total_amount=0,shipping_address=shipping_text)
         db.add(order_db)
         db.flush()
 

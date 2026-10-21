@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.database import Base
-from app.models import category,products,user,cart,orders
+from app.models import category,products,user,cart,orders,address
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -21,6 +21,7 @@ class OrderModel(Base):
     user_id=Column(Integer,ForeignKey("users.id"))
     total_amount=Column(Float,nullable=False)
     status=Column(String,default="placed")
+    shipping_address = Column(String, nullable=True)
     created_at=Column(DateTime,default=datetime.utcnow)
 
     items=relationship("OrderItemModel",back_populates="order")

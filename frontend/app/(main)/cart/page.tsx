@@ -3,34 +3,29 @@
 import { useState, useEffect } from "react"
 import CartItemCard from "../../components/CartItemCard"
 import SuccessModal from "../../components/successModal"
+import Modal from "@/app/components/modal"
 
-import { WS_URL } from '../../lib/config'
 import { getCart, updateCartQuantity, removeCartItem } from '../../lib/api/cart'
 import { placeOrder } from '../../lib/api/orders'
 import type { Cart } from '../../lib/api/cart'
 
-
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { getAddress } from '@/app/lib/api/address'
+import type { Address } from '@/app/lib/api/address'
 
 export default function Cart() {
   const [cart, setCart] = useState<Cart>({ items: [], subtotal: 0 })
   const [isSuccess, setIsSuccess] = useState(false);
- 
+  const router=useRouter()
+  const [addresses, setAddresses] = useState<Address[]>([])
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null)
+  const [addressesLoaded, setAddressesLoaded] = useState(false)
 
   useEffect(() => {
-    const token=localStorage.getItem('access_token')
-    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
-    ws.onopen=()=>{
-      console.log("websocket connected sucessfully")
-    }
-    ws.onerror=(error)=>{
-      console.log("error occured",error)
-    }
-    ws.onmessage=(event)=>{
-      console.log("message",event.data)
-       fetchCart()
-    }
+    
     fetchCart()
-    return () => ws.close() 
+    loadAddresses()
     
   }, [])
 
@@ -47,7 +42,7 @@ export default function Cart() {
   try {
     setCart(await updateCartQuantity( prod_id, newQuantity))
   } catch (err: any) {
-    alert(err.message) // e.g. "Not enough stock"
+    alert(err.message) 
   }
 }
 
@@ -60,8 +55,28 @@ export default function Cart() {
 }
 
  const handlePlaceOrder = async () => {
+  if (!addressesLoaded) return
+
+  // no address yet: go and add one,  
+  if (addresses.length === 0) {
+    router.push('/me')
+    //router.push('/me?add=1&returnTo=/cart')
+    return
+  }
+
+  if (selectedAddressId === null) {
+    <Modal isOpen={true}
+     onClose={()=>{false}}
+     title="Alert"
+    >
+      Please choose a delivery addresss
+    </Modal>
+    
+    return
+  }
+
   try {
-    await placeOrder()
+    await placeOrder(selectedAddressId)
     setCart({ items: [], subtotal: 0 })
     setIsSuccess(true)
   } catch (err: any) {
@@ -69,6 +84,18 @@ export default function Cart() {
   }
 }
 
+const loadAddresses = async () => {
+  try {
+    const data = await getAddress()
+    setAddresses(data)
+    const preferred = data.find((a) => a.is_default) ?? data[0]   // default first
+    setSelectedAddressId(preferred ? preferred.id : null)
+  } catch (err) {
+    console.error('unable to fetch addresses', err)
+  } finally {
+    setAddressesLoaded(true)
+  }
+}
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold uppercase text-gray-500">Your Cart</h2>
@@ -87,6 +114,34 @@ export default function Cart() {
               onDelete={handleDeleteItem}
             />
           ))}
+          <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2">
+  <h3 className="font-semibold text-gray-700">Deliver to</h3>
+
+  {addressesLoaded && addresses.length === 0 ? (
+    <p className="text-sm text-gray-500">
+      No address saved yet . You'll be navigated to add one when you place order.
+    </p>
+  ) : (
+    addresses.map((a) => (
+      <label key={a.id} className="flex items-start gap-3 text-sm cursor-pointer">
+        <input
+          type="radio"
+          name="address"
+          checked={selectedAddressId === a.id}
+          onChange={() => setSelectedAddressId(a.id)}
+        />
+        <span>
+          {a.Address_line1}, {a.city}, {a.state} - {a.pincode}
+          {a.is_default && <b> (Default)</b>}
+        </span>
+      </label>
+    ))
+  )}
+
+  <Link href="/me" className="text-sm text-blue-600 hover:underline">
+    Add or edit addresses
+  </Link>
+</div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-4 flex justify-end items-center gap-4">
            <h3 className="text-xl font-bold">Subtotal: ₹{cart.subtotal}</h3>

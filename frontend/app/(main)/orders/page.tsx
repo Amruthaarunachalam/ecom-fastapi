@@ -68,6 +68,9 @@ export default function OrderSummary() {
                   year:'numeric'
                 }
               )}
+              {order.shipping_address && (
+  <p className="text-sm text-gray-500">Deliver to: {order.shipping_address}</p>
+)}
               </div>
             <div className="flex justify-between text-sm text-gray-500">
               <span className="font-semibold">Order #{order.id}</span>

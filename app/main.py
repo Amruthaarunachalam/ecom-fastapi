@@ -8,6 +8,7 @@ from app.models import products as product_model
 from app.models import user as user_model
 from app.models import cart as cart_model
 from app.models import orders as orders_model
+from app.models import address as address_model
 
 from app.routers import categories as categories_router
 from app.routers import products as products_router
@@ -16,6 +17,7 @@ from app.routers import cart as cart_router
 from app.routers import orders as orders_router
 from app.routers import auth as auth_router
 from app.routers import ws as ws_router
+from app.routers import address as address_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="E-Commerce Backend")
@@ -35,6 +37,7 @@ app.include_router(cart_router.router)
 app.include_router(orders_router.router)
 app.include_router(auth_router.router)
 app.include_router(ws_router.router)
+app.include_router(address_router.router)
 
 @app.get("/")
 def root():
