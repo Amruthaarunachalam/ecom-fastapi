@@ -60,7 +60,6 @@ export default function Cart() {
   // no address yet: go and add one,  
   if (addresses.length === 0) {
     router.push('/me')
-    //router.push('/me?add=1&returnTo=/cart')
     return
   }
 
@@ -76,9 +75,10 @@ export default function Cart() {
   }
 
   try {
-    await placeOrder(selectedAddressId)
-    setCart({ items: [], subtotal: 0 })
-    setIsSuccess(true)
+    router.push(`/payment?address=${selectedAddressId}`)
+   // await placeOrder(selectedAddressId)
+   // setCart({ items: [], subtotal: 0 })
+   // setIsSuccess(true)
   } catch (err: any) {
     alert(err.message)
   }
@@ -147,7 +147,7 @@ const loadAddresses = async () => {
            <h3 className="text-xl font-bold">Subtotal: ₹{cart.subtotal}</h3>
             <button
               onClick={handlePlaceOrder}
-             className="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer"
+             className="px-4 py-2 bg-purple-400 text-white rounded-md cursor-pointer"
              >
               Proceed to order
             </button>

@@ -13,3 +13,10 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token:str
     token_type:str="bearer"
+
+class OtpVerifyRequest(BaseModel):
+    email: str
+    otp: str
+
+class MessageResponse(BaseModel):
+    message: str

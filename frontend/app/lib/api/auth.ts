@@ -3,7 +3,7 @@ import { request } from "../apiClient";
 
 interface TokenResponse{
     access_token:string,
-    type:string
+    token_type:string
 }
 interface LoginPayload {
   email:string;
@@ -22,7 +22,7 @@ export interface RegisterPayload{
 }
 
 export const Login=(payload:LoginPayload)=>
-    request<TokenResponse>('/auth/login',{
+     request<{ message: string }>('/auth/login',{
         method:'POST',
         body:JSON.stringify(payload)
     })
@@ -31,4 +31,10 @@ export const Register=(payload:RegisterPayload)=>
     request<RegisterResponse>('/auth/register',{
         method:'POST',
         body:JSON.stringify(payload)
+    })
+
+export const VerifyLoginOtp = (payload: { email: string, otp: string }) =>
+    request<TokenResponse>('/auth/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify(payload)
     })

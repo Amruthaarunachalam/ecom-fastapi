@@ -7,6 +7,7 @@ from ..dependencies import get_db,get_current_user
 from app.schema.orders import OrderItemResponse,OrderResponse,OrderCreate
 
 from app.services.orders_services import place_order,get_orders,get_users_order
+from app.services.otp_services import send_otp
 
 router=APIRouter(
     prefix="/orders",
@@ -14,8 +15,8 @@ router=APIRouter(
 )
 
 @router.post("/",response_model=OrderResponse)
-async def place_order_endpoint(address:OrderCreate,db:Session=Depends(get_db),current_user=Depends(get_current_user)):
-    return place_order(current_user.id,address.address_id,db)
+async def place_order_endpoint(order:OrderCreate,db:Session=Depends(get_db),current_user=Depends(get_current_user)):
+    return place_order(current_user.id,order.address_id,order.payment_method,order.otp,db)
 
 @router.get("/",response_model=List[OrderResponse])
 async def get_user_order_endpoint(db:Session=Depends(get_db),current_user=Depends(get_current_user)):
@@ -24,3 +25,8 @@ async def get_user_order_endpoint(db:Session=Depends(get_db),current_user=Depend
 @router.get("/detail/{order_id}",response_model=OrderResponse)
 def get_all_orders_endpoint(order_id:int,db:Session=Depends(get_db)):
     return get_orders(order_id,db)
+
+@router.post("/send-otp")
+def send_otp_endpoint(current_user=Depends(get_current_user)):
+    send_otp(current_user.id,current_user.email)
+    return {"message": "OTP sent"}

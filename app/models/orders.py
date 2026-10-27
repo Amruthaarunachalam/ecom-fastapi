@@ -22,6 +22,8 @@ class OrderModel(Base):
     total_amount=Column(Float,nullable=False)
     status=Column(String,default="placed")
     shipping_address = Column(String, nullable=True)
+    payment_method = Column(String, default="cod")
+    payment_status = Column(String, default="pending")
     created_at=Column(DateTime,default=datetime.utcnow)
 
     items=relationship("OrderItemModel",back_populates="order")

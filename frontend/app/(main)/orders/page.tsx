@@ -69,8 +69,39 @@ export default function OrderSummary() {
                 }
               )}
               {order.shipping_address && (
-  <p className="text-sm text-gray-500">Deliver to: {order.shipping_address}</p>
+                <p>
+  <span className="text-sm text-gray-900">Deliver to:</span> 
+  <span className="text-sm text-gray-500">{order.shipping_address}</span>
+  </p>
 )}
+
+{order.payment_method &&(
+  order.payment_method==='cod'?(
+    <p>
+    <span className="text-sm text-gray-900">Payment method:</span>
+    <span className='text-sm text-gray-500'>Cash On Delivery</span>
+    </p>
+):(
+   <p> 
+   <span className="text-sm text-gray-900">Payment method:</span>
+   <span className="text-sm text-gray-500"> Card</span>
+   </p>
+)
+)}
+{order.payment_status &&(
+  order.payment_status==='paid'?(
+   <p >
+    <span className="text-sm text-gray-900">Payment Status: </span>
+    <span className="text-sm text-green-700">{order.payment_status}</span>
+    </p>
+  ):(
+     <p >
+    <span className="text-sm text-gray-900">Payment Status: </span>
+    <span className="text-sm text-yellow-500">{order.payment_status}</span>
+    </p>
+  )
+)}
+
               </div>
             <div className="flex justify-between text-sm text-gray-500">
               <span className="font-semibold">Order #{order.id}</span>

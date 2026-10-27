@@ -8,8 +8,10 @@ from app.repository.cart_repo import get_user_cart_items, clear_cart
 from app.repository.user_repo import get_user
 from app.repository.products_repo import get_product
 from app.repository.address_repo import get_address
+from app.services.otp_services import verify_otp
 
-def place_order(user_id: int,address_id:int, db: Session):
+def place_order(user_id: int,address_id:int,payment_method:str,otp: str, db: Session):
+    verify_otp(user_id, otp)
     user_db = get_user(user_id, db)
     if user_db is None:
         raise HTTPException(status_code=404, detail=f'The user of id {user_id} is not found')
@@ -28,8 +30,10 @@ def place_order(user_id: int,address_id:int, db: Session):
         f"{address_db.state} - {address_db.pincode}"
     )
 
+    pay_status="paid" if payment_method=="card" else "pending"
+
     try:
-        order_db = OrderModel(user_id=user_id, total_amount=0,shipping_address=shipping_text)
+        order_db = OrderModel(user_id=user_id, total_amount=0,shipping_address=shipping_text,payment_method=payment_method,payment_status=pay_status)
         db.add(order_db)
         db.flush()
 
