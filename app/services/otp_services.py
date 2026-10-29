@@ -16,7 +16,6 @@ otps = {}
 def send_otp(user_id: int,email:str):
     otp = str(random.randint(100000, 999999))
     otps[user_id] = otp
-    print("OTP is:", otp) 
 
     msg = EmailMessage()
     msg["Subject"] = "Your OTP for order verification"

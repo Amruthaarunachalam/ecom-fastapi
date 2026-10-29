@@ -105,6 +105,7 @@ const handleSendOtp = async () => {
                 placeholder="CVV"
                 type="password"
                 value={cvv}
+                maxLength={3}
                 onChange={(e) => setCvv(e.target.value)}
               />
             </div>

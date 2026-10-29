@@ -20,3 +20,6 @@ class OtpVerifyRequest(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+class GoogleAuthRequest(BaseModel):
+    credential:str

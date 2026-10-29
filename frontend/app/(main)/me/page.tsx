@@ -49,7 +49,6 @@ export default function Details() {
   // user functions
   const fillForm = (u: User) => {
     setName(u.name);
-    setPhone_no(u.phone_no);
     setEmail(u.email);
   };
 

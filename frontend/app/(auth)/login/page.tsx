@@ -1,8 +1,12 @@
 'use client'
 import { useState,FormEvent } from "react";
 import LoginForm from "@/app/components/loginform";
-import { Login , VerifyLoginOtp} from "@/app/lib/api/auth";
+import { Login , VerifyLoginOtp,GoogleLoginRequest} from "@/app/lib/api/auth";
 import { useRouter } from "next/navigation";
+import { GoogleOAuthProvider,GoogleLogin } from "@react-oauth/google";
+
+const clientID=process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '1087491101723-727sdlbs46d8mpft4hfcm9sc3un8rfl3.apps.googleusercontent.com'
+
 export default function LoginPage(){
     const [email,setEmail]=useState('');
     const [password,setPassword]=useState('');
@@ -42,7 +46,21 @@ const handleVerifyOtp = async () => {
     } catch (err: any) {
         setError(err.message)
     }
-}
+  }
+
+    const handleGoogleLogin=async(res:any)=>{
+      setError('')
+      try{
+        const data=await GoogleLoginRequest({credential:res.credential})
+        localStorage.setItem('access_token',data.access_token)
+        router.push('/products')
+      }
+      catch (err:any){
+        setError(err.message)
+      }
+
+    }
+
     return(
        <div className="p-6" >
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -53,6 +71,7 @@ const handleVerifyOtp = async () => {
           <h2 className="text-xl font-bold">Login</h2>
          </div>
         {!otpSent ? (
+          <div>
   <LoginForm
     email={email}
     setEmail={setEmail}
@@ -61,6 +80,15 @@ const handleVerifyOtp = async () => {
     onSubmit={handleSubmit}
     onReset={resetForm}
   />
+  <div className="mt-4 flex justify-center">
+    <GoogleOAuthProvider clientId={clientID!}>
+      <GoogleLogin
+        onSuccess={handleGoogleLogin}
+        onError={() => setError('Google sign-in failed')}
+      />
+    </GoogleOAuthProvider>
+  </div>
+  </div>
 ) : (
   <div className="space-y-2">
     <p className="text-sm text-gray-500">Enter the 6-digit OTP sent to your email {email}</p>

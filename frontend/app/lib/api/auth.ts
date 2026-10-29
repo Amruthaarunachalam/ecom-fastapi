@@ -38,3 +38,9 @@ export const VerifyLoginOtp = (payload: { email: string, otp: string }) =>
         method: 'POST',
         body: JSON.stringify(payload)
     })
+
+export const GoogleLoginRequest=(payload:{credential:string})=>
+    request<TokenResponse>('/auth/google',{
+        method:'POST',
+        body: JSON.stringify(payload)
+    })
