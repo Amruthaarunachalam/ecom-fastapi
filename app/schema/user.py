@@ -1,8 +1,9 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserBase(BaseModel):
     name: str
-    phone_no: str
+    phone_no: Optional[str]=None
     email: str
 
 class UserCreate(UserBase):

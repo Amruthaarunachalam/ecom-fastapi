@@ -7,7 +7,7 @@ import Modal from "../../components/modal";
 
 import { getCategories, createCategory, updateCategory, deleteCategory } from '../../lib/api/categories';
 import type { Category } from '../../lib/api/categories';
-
+import { WS_URL } from "@/app/lib/config";
 
 
 export default function Categories() {
@@ -22,7 +22,20 @@ export default function Categories() {
  
 
   useEffect(() => {
+    const token=localStorage.getItem('access_token')
+    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
+    ws.onopen=()=>{
+      console.log("websocket connected successfully")
+    }
+    ws.onerror=(error)=>{
+      console.log("websocket ran into an error",error)
+    }
+    ws.onmessage=(event)=>{
+      console.log("message:",event.data)
+      fetchCategories()
+    }
     fetchCategories();
+    return () => ws.close() 
   }, []);
 
   

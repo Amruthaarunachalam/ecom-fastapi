@@ -28,3 +28,10 @@ def create_user_with_password(name:str,phone_no:str,email:str,hashed_password:st
     db.commit()
     db.refresh(user_db)
     return user_db
+
+def create_google_user(name:str,email:str,db:Session):
+    user_db=UserModel(name=name,email=email)
+    db.add(user_db)
+    db.commit()
+    db.refresh(user_db)
+    return user_db

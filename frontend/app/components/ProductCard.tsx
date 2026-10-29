@@ -19,6 +19,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: ProductCardProps) {
+  const isOutOfStock=(product.available_stock ?? 0)===0
   return (
     <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-800  dark:bg-gray-700 overflow-hidden dark:hover:border-gray-500 dark:hover:shadow-lg dark:hover:shadow-white/10 shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
@@ -44,7 +45,12 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: 
             <p className="text-gray-500 dark:text-gray-300 text-sm line-clamp-2">{product.prod_description}</p>
           )}
           <div className="flex items-center space-x-4 text-xs text-gray-500  dark:text-gray-300 pt-2">
-            <span>Stock: <b>{product.available_stock || 0}</b></span>
+            {isOutOfStock?(
+              <span className="text-red-500 font-bold bg-red-50 dark:bg-red-950/50 px-2 py-0.5 rounded">
+                Out of Stock
+              </span>
+              ):(
+            <span>Stock: <b>{product.available_stock}</b></span>)}
             {product.prod_color && <span>Color: <b>{product.prod_color}</b></span>}
           </div>
         </div>
@@ -64,8 +70,9 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: 
           Delete
         </button>
         <button onClick={()=>onAddToCart(product.id)}
+        disabled={isOutOfStock}
           className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105">
-            Add To Cart
+           {isOutOfStock? 'sold out':'Add To Cart'} 
         </button>
       </div>
     </div>

@@ -3,6 +3,7 @@ from fastapi import APIRouter,Depends
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
+from ..ws_manager import manager
 from ..dependencies import get_current_user,get_db
 from app.schema.user import UserCreate,UserResponse
 
@@ -24,7 +25,8 @@ def get_user_endpoint(db:Session=Depends(get_db),current_user=Depends(get_curren
     return check_get_user(current_user.id,db)
 
 @router.put("/me",response_model=UserResponse)
-def update_user_endpoint(user:UserCreate,db:Session=Depends(get_db),current_user=Depends(get_current_user)):
+async def update_user_endpoint(user:UserCreate,db:Session=Depends(get_db),current_user=Depends(get_current_user)):
+    await manager.broadcast(current_user.id,"user details updated")
     return check_update_user(current_user.id,user,db)
 
 #@router.delete("/{userid}")

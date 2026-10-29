@@ -11,6 +11,7 @@ import type { Product } from '../../lib/api/products';
 import type { Category } from '../../lib/api/categories';
 import { addToCart } from '../../lib/api/cart';
 
+import { WS_URL } from '@/app/lib/config';
 
 import CategoryFilter from '../../components/CategoryFilter';
 import ProductForm from '../../components/ProductForm';
@@ -40,8 +41,22 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
    const router=useRouter()
 
   useEffect(() => {
+    const token=localStorage.getItem('access_token')
+    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
+    ws.onopen=()=>{
+      console.log("websocket connected successfully")
+    }
+    ws.onerror=(error)=>{
+      console.log('websocket error',error)
+    }
+    ws.onmessage=(event)=>{
+      console.log("message",event.data)
+      fetchCategories();
+      fetchProducts();
+    }
     fetchCategories();
     fetchProducts();
+    return ()=>ws.close()
   }, []);
 
  const fetchCategories = async () => {
