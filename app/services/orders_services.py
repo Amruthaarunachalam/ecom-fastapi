@@ -24,6 +24,9 @@ def place_order(user_id: int,address_id:int,payment_method:str,otp: str, db: Ses
     if address_db is None or address_db.user_id != user_id:
         raise HTTPException(status_code=404, detail="Address not found")
 
+    if not user_db.phone_no:
+        raise HTTPException(status_code=400, detail="Please add your phone number before placing an order")
+
     shipping_text = (
         f"{user_db.name}, {user_db.phone_no}, "
         f"{address_db.Address_line1}, {address_db.city}, "
