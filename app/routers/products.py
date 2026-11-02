@@ -8,16 +8,15 @@ from app.schema.products import ProductCreate, ProductResponse
 
 from app.services.product_services import creating_products,check_get_product,check_get_all_product,update_prod,delete_product
 
-from ..dependencies import get_current_user,get_db
+from ..dependencies import get_current_user,get_db,user_admin
 router = APIRouter(
     prefix="/products",
     tags=["products"],
     dependencies=[Depends(get_current_user)]
 )
 
-@router.post("/", response_model=ProductResponse)
-async def create_product_endpoint(prod: ProductCreate, db: Session = Depends(get_db)):
-    await manager.broadcast_all("product created") 
+@router.post("/", response_model=ProductResponse, dependencies=[Depends(user_admin)])
+def create_product_endpoint(prod: ProductCreate, db: Session = Depends(get_db)):
     return creating_products(prod,db)
 
 
@@ -29,12 +28,10 @@ def get_product_endpoint(prodid: int, db: Session = Depends(get_db)):
 def get_all_products_endpoint(skip: int = 0, limit: int = 100, category_id: int = None, db: Session = Depends(get_db)):
     return check_get_all_product(db,skip,limit,category_id)
 
-@router.put("/{prodid}", response_model=ProductResponse)
-async def updating_products(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
-    await manager.broadcast_all("product has been updated")
+@router.put("/{prodid}", response_model=ProductResponse, dependencies=[Depends(user_admin)])
+def updating_products(prodid: int, prod: ProductCreate, db: Session = Depends(get_db)):
     return update_prod(prodid,prod,db)
 
-@router.delete("/{prodid}")
-async def deleting_products(prodid: int, db: Session = Depends(get_db)):
-    await manager.broadcast_all("product has been deleted")
+@router.delete("/{prodid}",dependencies=[Depends(user_admin)])
+def deleting_products(prodid: int, db: Session = Depends(get_db)):
     return delete_product(prodid,db)

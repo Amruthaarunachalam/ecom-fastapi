@@ -11,13 +11,12 @@ import type { Product } from '../../lib/api/products';
 import type { Category } from '../../lib/api/categories';
 import { addToCart } from '../../lib/api/cart';
 
-import { WS_URL } from '@/app/lib/config';
-
 import CategoryFilter from '../../components/CategoryFilter';
 import ProductForm from '../../components/ProductForm';
 import ProductCard from '../../components/ProductCard';
 import Modal from '../../components/modal';
 
+import { getUser } from '@/app/lib/api/user';
 
 export default function Dashboard() {
 const [isOpen,setIsOpen]=useState(false);
@@ -37,28 +36,25 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
 
+  const [isAdmin,setIsAdmin]=useState(false)
+
 
    const router=useRouter()
 
   useEffect(() => {
-    const token=localStorage.getItem('access_token')
-    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
-    ws.onopen=()=>{
-      console.log("websocket connected successfully")
-    }
-    ws.onerror=(error)=>{
-      console.log('websocket error',error)
-    }
-    ws.onmessage=(event)=>{
-      console.log("message",event.data)
-      fetchCategories();
-      fetchProducts();
-    }
+    getCurrentUser();
     fetchCategories();
     fetchProducts();
-    return ()=>ws.close()
   }, []);
 
+  const getCurrentUser = async () => {
+  try {
+    const data = await getUser();
+    setIsAdmin(data.role === "admin");   
+  } catch (err) {
+    console.error("failed getting the user:", err)
+  }
+}
  const fetchCategories = async () => {
   try {
     const data = await getCategories();
@@ -162,14 +158,14 @@ const fetchProducts = async (catId?: number | 'ALL') => {
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={handleCategoryFilter}
-      />
+      />{isAdmin&&
       <div className="flex justify-end">
       <button
       onClick={()=>{resetForm();setIsOpen(true);}}
       className="px-4 py-2 bg-purple-500 text-white rounded-md overflow-hidden shadow-lg hover:bg-blue-700 cursor-pointer hover:scale-105">
         + Add new Products
       </button>
-     </div>
+     </div>}
      <Modal
      isOpen={isOpen}
      onClose={()=>setIsOpen(false)}
@@ -228,6 +224,7 @@ const fetchProducts = async (catId?: number | 'ALL') => {
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
                 onAddToCart={handleAddToCart}
+                isAdmin={isAdmin}
               />
             ))}
           </div>

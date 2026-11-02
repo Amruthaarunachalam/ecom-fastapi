@@ -16,9 +16,10 @@ interface ProductCardProps {
   onEdit: (product: Product) => void;
   onDelete: (id: number) => void;
   onAddToCart:(id:number)=>void
+  isAdmin:boolean
 }
 
-export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: ProductCardProps) {
+export default function ProductCard({ product, onEdit, onDelete, onAddToCart,isAdmin }: ProductCardProps) {
   const isOutOfStock=(product.available_stock ?? 0)===0
   return (
     <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-800  dark:bg-gray-700 overflow-hidden dark:hover:border-gray-500 dark:hover:shadow-lg dark:hover:shadow-white/10 shadow-sm flex flex-col justify-between hover:scale-105">
@@ -55,8 +56,9 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: 
           </div>
         </div>
       </div>
+      {isAdmin ?(
 
-      <div className="p-4 pt-0 flex space-x-2">
+      <div className="p-4 pt-0 flex space-x-2">      
         <button
           onClick={() => onEdit(product)}
           className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
@@ -74,7 +76,15 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart }: 
           className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105">
            {isOutOfStock? 'sold out':'Add To Cart'} 
         </button>
+      </div>):(
+      <div className="p-4 pt-0 flex space-x-2">  
+      <button onClick={()=>onAddToCart(product.id)}
+        disabled={isOutOfStock}
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105">
+           {isOutOfStock? 'sold out':'Add To Cart'} 
+        </button>
       </div>
+      )}
     </div>
   );
 }

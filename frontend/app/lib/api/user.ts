@@ -4,6 +4,7 @@ export interface User{
     name:string,
     phone_no?:string | null,
     email:string
+    role:string
 }
 export interface UserPayload{
     name:string,

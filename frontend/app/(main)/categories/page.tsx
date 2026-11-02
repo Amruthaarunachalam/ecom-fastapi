@@ -9,6 +9,7 @@ import { getCategories, createCategory, updateCategory, deleteCategory } from '.
 import type { Category } from '../../lib/api/categories';
 import { WS_URL } from "@/app/lib/config";
 
+import { getUser } from '@/app/lib/api/user';
 
 export default function Categories() {
   const [isOpen,setIsOpen]=useState(false);
@@ -19,25 +20,23 @@ export default function Categories() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
 
- 
+  const [isAdmin,setIsAdmin]=useState(false)
+
 
   useEffect(() => {
-    const token=localStorage.getItem('access_token')
-    const ws=new WebSocket(`${WS_URL}/ws?token=${token}`)
-    ws.onopen=()=>{
-      console.log("websocket connected successfully")
-    }
-    ws.onerror=(error)=>{
-      console.log("websocket ran into an error",error)
-    }
-    ws.onmessage=(event)=>{
-      console.log("message:",event.data)
-      fetchCategories()
-    }
+    getCurrentUser();
     fetchCategories();
-    return () => ws.close() 
+    
   }, []);
 
+  const getCurrentUser = async () => {
+  try {
+    const data = await getUser();
+    setIsAdmin(data.role === "admin");   
+  } catch (err) {
+    console.error("failed getting the user:", err)
+  }
+}
   
   const fetchCategories = async () => {
   try {
@@ -103,6 +102,7 @@ const handleDeleteClick=(id:number)=>{
 
   return (
     <div className="space-y-8">
+      {isAdmin&&(
       <div className="flex justify-end">
          <button
       onClick={()=>{resetForm();setIsOpen(true);}}
@@ -110,6 +110,7 @@ const handleDeleteClick=(id:number)=>{
         + Add new Category
       </button>
       </div>
+      )}
         <Modal 
         isOpen={isOpen}
         onClose={()=>setIsOpen(false)}
@@ -161,6 +162,7 @@ const handleDeleteClick=(id:number)=>{
                 category={c} 
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
+                isAdmin={isAdmin}
               />
             ))}
           </div>

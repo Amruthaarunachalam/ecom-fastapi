@@ -53,13 +53,12 @@ async def log_request_time(request: Request, call_next):
     print(f"Request: {request.method} {request.url.path} - Response: {response.status_code} - Time: {process_time:.4f}s)")
     return response
 
-EXCLUDED_PATHS = ["/", "/docs", "/openapi.json", "/login","/register","/redocs"]
+EXCLUDED_PATHS = ["/", "/docs", "/openapi.json", "/auth/login","/auth/register","/redocs","/auth/verify-otp","/auth/google"]
 
 @app.middleware("http")
 async def authenticate_request(request: Request, call_next):
     if request.url.path in EXCLUDED_PATHS or request.method == "OPTIONS":
         return await call_next(request)
-        
     if "Authorization" not in request.headers:
         return JSONResponse(
             status_code=401, 
