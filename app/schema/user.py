@@ -11,5 +11,6 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
+    role: str = "user"
     class Config:
         from_attributes=True

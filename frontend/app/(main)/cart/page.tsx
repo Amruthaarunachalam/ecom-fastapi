@@ -8,6 +8,7 @@ import Modal from "@/app/components/modal"
 import { getCart, updateCartQuantity, removeCartItem } from '../../lib/api/cart'
 import { placeOrder } from '../../lib/api/orders'
 import type { Cart } from '../../lib/api/cart'
+import { getUser } from '../../lib/api/user'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -21,7 +22,8 @@ export default function Cart() {
   const [addresses, setAddresses] = useState<Address[]>([])
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null)
   const [addressesLoaded, setAddressesLoaded] = useState(false)
-
+  const [showPhoneModal, setShowPhoneModal] = useState(false)
+  const [showAddressModal, setShowAddressModal] = useState(false)
   useEffect(() => {
     
     fetchCart()
@@ -56,10 +58,10 @@ export default function Cart() {
 
  const handlePlaceOrder = async () => {
   if (!addressesLoaded) return
-
+  
   // no address yet: go and add one,  
   if (addresses.length === 0) {
-    router.push('/me')
+    setShowAddressModal(true)
     return
   }
 
@@ -75,6 +77,16 @@ export default function Cart() {
   }
 
   try {
+    try {
+  const me = await getUser()
+  if (!me.phone_no) {
+    setShowPhoneModal(true)
+    return
+  }
+} catch (err: any) {
+  alert(err.message)
+  return
+}
     router.push(`/payment?address=${selectedAddressId}`)
    // await placeOrder(selectedAddressId)
    // setCart({ items: [], subtotal: 0 })
@@ -119,7 +131,7 @@ const loadAddresses = async () => {
 
   {addressesLoaded && addresses.length === 0 ? (
     <p className="text-sm text-gray-500">
-      No address saved yet . You'll be navigated to add one when you place order.
+      No address saved yet . Add one in your account to place the order.
     </p>
   ) : (
     addresses.map((a) => (
@@ -160,6 +172,39 @@ const loadAddresses = async () => {
           successMsg="Order Placed Successfully!!"
           onClose={() => setIsSuccess(false)}
           />
+
+
+          <Modal
+  isOpen={showPhoneModal}
+  onClose={() => setShowPhoneModal(false)}
+  title="Phone number required"
+>
+  <p className="text-sm text-gray-600 mb-3">
+    Please add your phone number in your account to proceed with the order.
+  </p>
+  <button
+    onClick={() => router.push('/me')}
+    className="px-4 py-2 bg-purple-400 text-white rounded-md cursor-pointer"
+  >
+    Go to My Account
+  </button>
+</Modal>
+
+<Modal
+  isOpen={showAddressModal}
+  onClose={() => setShowAddressModal(false)}
+  title="Address required"
+>
+  <p className="text-sm text-gray-600 mb-3">
+    Please add a delivery address in your account to proceed with the order.
+  </p>
+  <button
+    onClick={() => router.push('/me')}
+    className="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer"
+  >
+    Go to My Account
+  </button>
+</Modal>
     </div>
   )
 }

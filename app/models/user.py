@@ -9,3 +9,4 @@ class UserModel(Base):
     phone_no = Column(String, nullable=True) 
     email = Column(String, unique=True, nullable=False)  
     hashed_password = Column(String, nullable=True)
+    role=Column(String,default="user",nullable=False)

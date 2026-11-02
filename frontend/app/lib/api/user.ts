@@ -2,12 +2,13 @@ import { request } from "../apiClient"
 export interface User{
     id:number,
     name:string,
-    phone_no?:string,
+    phone_no?:string | null,
     email:string
+    role:string
 }
 export interface UserPayload{
     name:string,
-    phone_no?:string,
+    phone_no?:string |null,
     email:string
 }
 export const getUser=()=>{

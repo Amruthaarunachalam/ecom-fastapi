@@ -10,9 +10,10 @@ interface CategoryCardProps {
   category: Category;
   onEdit: (category: Category) => void;
   onDelete: (id: number) => void;
+  isAdmin:boolean
 }
 
-export default function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) {
+export default function CategoryCard({ category, onEdit, onDelete,isAdmin }: CategoryCardProps) {
   return (
     <div className="bg-white rounded-xl border  dark:border-gray-800  dark:bg-gray-700 border-gray-200 dark:hover:border-gray-500 dark:hover:shadow-lg dark:hover:shadow-white/10  overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
@@ -32,7 +33,7 @@ export default function CategoryCard({ category, onEdit, onDelete }: CategoryCar
           )}
         </div>
       </div>
-
+      {isAdmin &&(
       <div className="p-4 pt-0 flex space-x-2">
         <button
           onClick={() => onEdit(category)}
@@ -47,6 +48,7 @@ export default function CategoryCard({ category, onEdit, onDelete }: CategoryCar
           Delete
         </button>
       </div>
+      )}
     </div>
   );
 }
