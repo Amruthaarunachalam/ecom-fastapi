@@ -5,13 +5,15 @@ from app.schema.user import UserCreate,UserResponse
 from app.models.user import UserModel
 from app.repository.user_repo import create_user,get_user,get_all_user
 
+from app.exceptions import NotFoundException
+
 def creating_user(user:UserCreate,db:Session):
     return create_user(user,db)
 
 def check_get_user(userid:int,db:Session):
     user_db=get_user(userid,db)
     if user_db is None:
-         raise HTTPException(status_code=404,detail=f'User of id {userid} is not found')
+         raise NotFoundException(f'User of id {userid} is not found')
     return user_db
 
 def check_get_all_user(db:Session,skip:int=0,limit:int=10):
@@ -23,7 +25,7 @@ def check_get_all_user(db:Session,skip:int=0,limit:int=10):
 def check_update_user(userid:int,user:UserCreate,db:Session):
     user_id=get_user(userid,db)
     if user_id is None:
-        raise HTTPException(status_code=404,detail=f'User of id {userid} is not found')
+        raise NotFoundException(f'User of id {userid} is not found')
     user_id.name=user.name
     user_id.phone_no=user.phone_no
     user_id.email=user.email
@@ -37,7 +39,7 @@ def check_update_user(userid:int,user:UserCreate,db:Session):
 def check_delete_user(userid:int,db:Session):
     user_db=get_user(userid,db)
     if user_db is None:
-        raise HTTPException(status_code=404,detail=f'User of id {userid} is not found')
+        raise NotFoundException(f'User of id {userid} is not found')
 
     db.delete(user_db)
     db.commit()

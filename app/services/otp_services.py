@@ -5,7 +5,7 @@ import smtplib
 from fastapi import HTTPException
 from email.message import EmailMessage
 from dotenv import load_dotenv
-
+from app.exceptions import InvalidOtpException,AppException
 load_dotenv()
 
 SENDER_EMAIL_ADDRESS = os.getenv("SENDER_EMAIL_ADDRESS")
@@ -29,10 +29,10 @@ def send_otp(user_id: int,email:str):
             server.send_message(msg)
     except Exception as e:
         print("Email error:", e)
-        raise HTTPException(status_code=500, detail="Could not send OTP email")
+        raise AppException("Could not send OTP email")
 
 
 def verify_otp(user_id: int, otp: str):
     if otps.get(user_id) != otp:
-        raise HTTPException(status_code=400, detail="Invalid OTP")
+        raise InvalidOtpException("Invalid OTP")
     del otps[user_id]           

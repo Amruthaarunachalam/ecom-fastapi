@@ -16,7 +16,7 @@ export default function RegisterForm() {
   const [password,setPassword]=useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
-
+  const [error,setError]=useState('');
   const router=useRouter()
  
   const resetForm = () => {
@@ -37,11 +37,12 @@ export default function RegisterForm() {
     };
 
     try {
+      setError('')
     await Register(payload)
     setIsSuccess(true)
     router.push('/login')
-    } catch (err) {
-      console.error('Error saving user:', err);
+    } catch (err:unknown) {
+      setError(err instanceof Error? err.message:"something went wrong");
     }
   };
 
@@ -71,7 +72,7 @@ export default function RegisterForm() {
           Already have an account?{' '}
           <Link href="/login" className="text-blue-600 hover:underline">Login</Link>
         </p>
-       
+         {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       </div>
       <SuccessModal

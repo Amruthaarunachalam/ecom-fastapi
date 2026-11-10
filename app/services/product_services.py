@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.schema.products import ProductCreate, ProductResponse
 from app.models.products import ProductModel
+from app.exceptions import NotFoundException
 
 from app.repository.products_repo import (
     create_product,
@@ -17,7 +18,7 @@ def creating_products(prod: ProductCreate, db: Session):
 def check_get_product(prodid: int, db: Session):
     prod_db = get_product(prodid, db)
     if prod_db is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise NotFoundException("Product not found")
     return prod_db
 
 
@@ -31,7 +32,7 @@ def check_get_all_product(db: Session, skip: int = 0, limit: int = 100, category
 def update_prod(prodid: int, prod: ProductCreate, db: Session):
     prod_db = get_product(prodid, db)
     if prod_db is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise NotFoundException("Product not found")
 
     prod_db.prod_name = prod.prod_name
     prod_db.category_id = prod.category_id
@@ -50,7 +51,7 @@ def update_prod(prodid: int, prod: ProductCreate, db: Session):
 def delete_product(prodid: int, db: Session):
     prod_db = get_product(prodid, db)
     if prod_db is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise NotFoundException("Product not found")
     db.delete(prod_db)
     db.commit()
     return {"message": "Product deleted successfully"}

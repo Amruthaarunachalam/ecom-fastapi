@@ -3,11 +3,13 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from ..database import SessionLocal
-from ..dependencies import get_db,get_current_user
-from app.schema.orders import OrderItemResponse,OrderResponse,OrderCreate
+from ..dependencies import get_db,get_current_user,user_admin
+from app.schema.orders import OrderItemResponse,OrderResponse,OrderCreate,OrderStatusUpdate
 
-from app.services.orders_services import place_order,get_orders,get_users_order
+from app.services.orders_services import place_order,get_orders,get_users_order,list_all_orders,update_order_status
 from app.services.otp_services import send_otp
+
+from ..ws_manager import manager
 
 router=APIRouter(
     prefix="/orders",
@@ -30,3 +32,13 @@ def get_all_orders_endpoint(order_id:int,db:Session=Depends(get_db)):
 def send_otp_endpoint(current_user=Depends(get_current_user)):
     send_otp(current_user.id,current_user.email)
     return {"message": "OTP sent"}
+
+@router.get("/all",response_model=List[OrderResponse],dependencies=[Depends(user_admin)])
+def list_all_orders_endpoint(db:Session=Depends(get_db),skip:int=0,limit:int=100):
+    return list_all_orders(db,skip,limit)
+
+@router.put("/{order_id}/status",response_model=OrderResponse,dependencies=[Depends(user_admin)])
+async def update_order_status_endpoint(order_id:int,data:OrderStatusUpdate,db:Session=Depends(get_db)):
+    order=update_order_status(order_id,data.status,db)
+    await manager.broadcast(order.user_id,"Status Updated")
+    return order

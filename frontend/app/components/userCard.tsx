@@ -29,13 +29,13 @@ export default function UserProfile({ isOpen, onClose, user }: ProfileProps) {
       <div className="fixed inset-0 z-30" onClick={onClose} />
 
       {/* Card Popup */}
-      <div className="absolute right-0 top-12 z-40 w-64 rounded-xl border border-gray-200 bg-white p-4 text-gray-800 shadow-lg">
+      <div className="absolute right-0 top-12 z-40 w-64 rounded-xl border border-gray-200 bg-white p-4 text-gray-800 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100">
         {/* Header */}
         <div className="mb-3 flex items-center justify-between gap-4">
           <h2 className="text-lg font-bold uppercase">{user?.name ?? ''}</h2>
           <button
             onClick={onClose}
-            className="cursor-pointer font-bold text-gray-500 hover:text-black"
+            className="cursor-pointer font-bold text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
           >
             ✕
           </button>
@@ -46,7 +46,7 @@ export default function UserProfile({ isOpen, onClose, user }: ProfileProps) {
           {/* My Details Button */}
           <button
             onClick={mydetails}
-            className="flex w-full cursor-pointer items-center gap-2 text-left text-md text-gray-600 transition-colors hover:text-black"
+            className="flex w-full cursor-pointer items-center gap-2 text-left text-md text-gray-600 transition-colors hover:text-black dark:text-gray-300 dark:hover:text-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ export default function UserProfile({ isOpen, onClose, user }: ProfileProps) {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex w-full cursor-pointer items-center gap-2 pt-2 text-left text-red-700 transition-opacity hover:opacity-80 active:text-red-900"
+            className="flex w-full cursor-pointer items-center gap-2 pt-2 text-left text-red-700 transition-opacity hover:opacity-80 active:text-red-900 dark:text-red-400 dark:active:text-red-300"
           >
             <svg
               className="h-5 w-5"

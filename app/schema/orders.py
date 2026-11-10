@@ -26,3 +26,6 @@ class OrderCreate(BaseModel):
     address_id: int
     payment_method: Literal["cod", "card"]
     otp: str
+
+class OrderStatusUpdate(BaseModel):
+    status: Literal["shipped", "delivered"]

@@ -31,3 +31,12 @@ export const placeOrder = (addressId: number,paymentMethod:string,otp:string) =>
 
 export const getUserOrders = () =>
   request<Order[]>(`/orders/`)
+
+export const getAllOrders = () =>
+  request<Order[]>('/orders/all')
+
+export const updateOrderStatus = (orderId: number, status: string) =>
+  request<Order>(`/orders/${orderId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  })

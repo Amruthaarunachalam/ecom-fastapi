@@ -12,3 +12,11 @@ def get_orders_by_user(user_id: int, db: Session):
         .order_by(OrderModel.id.desc())
         .all()
     )
+
+def get_all_orders(db:Session,skip:int=0,limit:int=100):
+    return(db.query(OrderModel)
+    .order_by(OrderModel.id.desc())
+    .offset(skip)
+    .limit(limit)
+    .all()
+    )

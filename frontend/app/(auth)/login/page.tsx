@@ -4,6 +4,7 @@ import LoginForm from "@/app/components/loginform";
 import { Login , VerifyLoginOtp,GoogleLoginRequest} from "@/app/lib/api/auth";
 import { useRouter } from "next/navigation";
 import { GoogleOAuthProvider,GoogleLogin } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
 
 const clientID=process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '1087491101723-727sdlbs46d8mpft4hfcm9sc3un8rfl3.apps.googleusercontent.com'
 
@@ -21,8 +22,8 @@ const requestOtp = async () => {
         await Login({ email, password })
         setOtpSent(true)
         setOtp('')
-    } catch (err: any) {
-        setError(err.message)
+    } catch (err: unknown) {
+        setError(err instanceof Error?err.message:"something went wrong")
     }
 }
 
@@ -43,23 +44,27 @@ const handleVerifyOtp = async () => {
         const data = await VerifyLoginOtp({ email, otp })
         localStorage.setItem('access_token', data.access_token)
         router.push('/products')
-    } catch (err: any) {
-        setError(err.message)
+    } catch (err: unknown) {
+        setError(err instanceof Error? err.message:"something went wrong")
     }
   }
 
-    const handleGoogleLogin=async(res:any)=>{
-      setError('')
-      try{
-        const data=await GoogleLoginRequest({credential:res.credential})
-        localStorage.setItem('access_token',data.access_token)
-        router.push('/products')
-      }
-      catch (err:any){
-        setError(err.message)
-      }
+    const handleGoogleLogin = async (res: CredentialResponse) => {
+    setError('')
 
+    if (!res.credential) {
+        setError('Google sign-in failed')
+        return
     }
+
+    try {
+        const data = await GoogleLoginRequest({ credential: res.credential })
+        localStorage.setItem('access_token', data.access_token)
+        router.push('/products')
+    } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'something went wrong')
+    }
+}
 
     return(
        <div className="p-6" >

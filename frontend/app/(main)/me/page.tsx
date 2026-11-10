@@ -39,55 +39,61 @@ export default function Details() {
   const [state, setState] = useState('');
   const [pincode, setPincode] = useState('');
 
-
+  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     loadUser();
     loadAddress();
   }, []);
 
-  // user functions
+
   const fillForm = (u: User) => {
     setName(u.name);
+    setPhone_no(u.phone_no ?? '');      
     setEmail(u.email);
   };
 
   const loadUser = async () => {
-    try {
-      const data = await getUser();
-      setUser(data);
-      fillForm(data);
-    } catch (err) {
-      console.error('unable to fetch user', err);
-    }
-  };
+  try {
+    const data = await getUser();
+    setUser(data);
+    fillForm(data);
+  } catch (err) {
+    console.error('unable to fetch user', err);
+    setError(err instanceof Error ? err.message : 'Could not load your details');
+  }
+};
 
   const cancelEdit = () => {
-    if (user) fillForm(user);
-    setDisable(true);
-  };
+  if (user) fillForm(user);
+  setError('');
+  setDisable(true);
+};
 
   const editDetails = async (e: FormEvent) => {
-    e.preventDefault();
-    const payload = { name, phone_no, email };
-    try {
-      const updated = await updateUser(payload);
-      setUser(updated);
-      fillForm(updated);
-      setDisable(true);
-    } catch (err: any) {
-      console.error(err.message);
-    }
-  };
-
+  e.preventDefault();
+  setError('');
+  const payload = { name, phone_no, email };
+  try {
+    const updated = await updateUser(payload);
+    setUser(updated);
+    fillForm(updated);
+    setDisable(true);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Could not save your details');
+  }
+};
   // address functions
   const loadAddress = async () => {
-    try {
-      setAddresses(await getAddress());
-    } catch (err) {
-      console.error('unable to fetch address', err);
-    }
-  };
+  try {
+    setAddresses(await getAddress());
+  } catch (err) {
+    console.error('unable to fetch address', err);
+    setError(err instanceof Error ? err.message : 'Could not load your addresses');
+  }
+};
+
 
   const clearAddressForm = () => {
     setEditingId(null);
@@ -95,6 +101,7 @@ export default function Details() {
     setCity('');
     setState('');
     setPincode('');
+    setFormError('');
   };
 
   const openAddModal = () => {
@@ -109,6 +116,7 @@ export default function Details() {
     setState(a.state);
     setPincode(a.pincode);
     setIsOpen(true);
+    setFormError('');
   };
 
   const closeModal = () => {
@@ -117,21 +125,21 @@ export default function Details() {
   };
 
   const handleAddressSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    const payload = { Address_line1, city, state, pincode };
-    try {
-      if (editingId) {
-        await updateAddress(editingId, payload);
-      } else {
-        await createAddress(payload);
-      }
-
-      await loadAddress();
-      closeModal();
-    } catch (err: any) {
-      console.error(err.message);
+  e.preventDefault();
+  setFormError('');
+  const payload = { Address_line1, city, state, pincode };
+  try {
+    if (editingId) {
+      await updateAddress(editingId, payload);
+    } else {
+      await createAddress(payload);
     }
-  };
+    await loadAddress();
+    closeModal();
+  } catch (err) {
+    setFormError(err instanceof Error ? err.message : 'Could not save the address');
+  }
+};
 
   const initial = (user?.name || name || '?').charAt(0).toUpperCase();
 
@@ -155,6 +163,8 @@ export default function Details() {
         </div>
 
         <form onSubmit={editDetails} className="space-y-6 p-6">
+          {error && <p className="text-sm text-red-600">{error}</p>}
+
           <MyDetails
             name={name}
             setName={setName}
@@ -228,6 +238,7 @@ export default function Details() {
 
       <Modal isOpen={isOpen} onClose={closeModal} title={editingId ? 'Edit address' : 'Add address'}>
         <form onSubmit={handleAddressSubmit} className="space-y-5">
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
           <MyAddressDetails
             Address_line1={Address_line1}
             setAddress_line1={setAddress_line1}

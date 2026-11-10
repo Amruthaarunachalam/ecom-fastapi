@@ -19,7 +19,8 @@ export default function Categories() {
   const [description, setDescription] = useState('');
   const [editingId, setEditingId] = useState<number | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-
+  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
   const [isAdmin,setIsAdmin]=useState(false)
 
 
@@ -38,11 +39,12 @@ export default function Categories() {
   }
 }
   
-  const fetchCategories = async () => {
+ const fetchCategories = async () => {
   try {
     setCategories(await getCategories());
-  } catch (err) {
+  } catch (err:unknown) {
     console.error('Failed fetching categories:', err);
+    setError(err instanceof Error ? err.message : 'Could not load categories');
   }
 };
 
@@ -52,6 +54,7 @@ export default function Categories() {
     setDeletingId(null);
     setCategoryName('');
     setDescription('');
+    setFormError('');
     setIsOpen(false);
   };
 
@@ -66,6 +69,7 @@ export default function Categories() {
  
  const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
+  setFormError('');
 
   const payload = {
     cat_name: CategoryName,
@@ -80,10 +84,10 @@ export default function Categories() {
     }
     resetForm();
     fetchCategories();
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err:unknown) {
+    setFormError(err instanceof Error ? err.message : 'Could not save the category');
   }
-};
+}
 
 const handleDeleteClick=(id:number)=>{
     setDeletingId(id);
@@ -95,8 +99,8 @@ const handleDeleteClick=(id:number)=>{
   try {
     await deleteCategory(id);
     fetchCategories();
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err:unknown) {
+    setError(err instanceof Error ? err.message : 'Could not delete the category');
   }
 };
 
@@ -136,7 +140,9 @@ const handleDeleteClick=(id:number)=>{
                   </div>
              </div>):
       
-      (<CategoryForm
+      ( <>
+        {formError && <p className="mb-2 text-sm text-red-600">{formError}</p>}
+      <CategoryForm
         editingId={editingId}
         CategoryName={CategoryName}
         setCategoryName={setCategoryName}
@@ -144,12 +150,14 @@ const handleDeleteClick=(id:number)=>{
         setDescription={setDescription}
         onSubmit={handleSubmit}
         onReset={resetForm}
-      />)}
+      />
+      </>)}
       </Modal>
 
      
       <div>
         <h2 className="text-2xl font-bold mb-4 uppercase text-gray-800">Categories Catalog</h2>
+        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
         {categories.length === 0 ? ( 
           <div className="p-8 bg-white rounded-xl text-center text-gray-500">
             No categories found.

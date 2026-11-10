@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
 from ..ws_manager import manager
-from ..dependencies import get_current_user,get_db
+from ..dependencies import get_current_user,get_db,user_admin
 from app.schema.user import UserCreate,UserResponse
 
 from app.services.user_services import creating_user,check_get_user,check_get_all_user,check_update_user,check_delete_user
@@ -16,9 +16,9 @@ router=APIRouter(
 )
 
 
-#@router.get("/",response_model=List[UserResponse])
-#def get_all_user_endpoint(skip:int=0,limit:int=10,db:Session=Depends(get_db)):
-#    return check_get_all_user(db,skip,limit)
+@router.get("/",response_model=List[UserResponse],dependencies=[Depends(user_admin)])
+def get_all_user_endpoint(skip:int=0,limit:int=10,db:Session=Depends(get_db)):
+    return check_get_all_user(db,skip,limit)
 
 @router.get("/me",response_model=UserResponse)
 def get_user_endpoint(db:Session=Depends(get_db),current_user=Depends(get_current_user)):
