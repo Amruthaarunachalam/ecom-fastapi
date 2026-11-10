@@ -18,13 +18,13 @@ export default function CategoryFilter({
 }: CategoryFilterProps) {
   return (
     <div className="flex items-center space-x-2 overflow-x-auto pb-2">
-      <span className="text-sm font-semibold text-gray-500 mr-2">Category Filter:</span>
+      <span className="text-sm font-semibold text-gray-500 mr-2 dark:text-gray-400">Category Filter:</span>
       <button
         onClick={() => onSelectCategory('ALL')}
         className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer  ${
           selectedCategory === 'ALL'
             ? 'bg-purple-500 text-white'
-            : 'bg-white text-gray-600 overflow-hidden shadow-lg hover:bg-gray-50 hover:scale-95'
+            : 'bg-white text-gray-600 overflow-hidden shadow-lg hover:bg-gray-50 hover:scale-95 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:shadow-none'
         }`}
       >
         All Products
@@ -36,7 +36,7 @@ export default function CategoryFilter({
           className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer ${
             selectedCategory === c.id
               ? 'bg-purple-400 text-white'
-              : 'bg-white text-gray-600 overflow-hidden shadow-lg hover:bg-gray-50 hover:scale-95'
+              : 'bg-white text-gray-600 overflow-hidden shadow-lg hover:bg-gray-50 hover:scale-95 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:shadow-none'
           }`}
         >
           {c.cat_name}

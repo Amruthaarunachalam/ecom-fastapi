@@ -29,11 +29,11 @@ export default function CartItemCard({prod_id,
   
     return(
 <div>
-    <div className="bg-white rounded-md border border-gray-200 grid grid-cols-[80px_1fr_120px_120px_100px_40px] items-center gap-4 p-4">
+    <div className="bg-white rounded-md border border-gray-200 grid grid-cols-[80px_1fr_120px_120px_100px_40px] items-center gap-4 p-4 dark:bg-gray-700 dark:border-gray-800 dark:text-gray-100">
         {image_url?
-        (<img src={image_url} alt={prod_name} className="w-20 h-20 object contain bg-gray-100"/>)
+        (<img src={image_url} alt={prod_name} className="w-20 h-20 object contain bg-gray-100 dark:bg-gray-600"/>)
         :(
-         <div className="w-20 h-20 bg-gray-100 flex items-center justify-center text-xs text-gray-400">No Image</div>
+         <div className="w-20 h-20 bg-gray-100 flex items-center justify-center text-xs text-gray-400 dark:bg-gray-600 dark:text-gray-300">No Image</div>
         )}
         
         <div>
@@ -43,15 +43,15 @@ export default function CartItemCard({prod_id,
         
         <div className="flex items-center gap-2">
             <button onClick={()=>onQuantityChange(prod_id,quantity-1)} disabled={quantity <= 1}
-              className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">-</button>
+              className="px-3 py-1 bg-gray-200 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-600 dark:text-gray-100">-</button>
             <span>{quantity}</span>
             <button onClick={()=>onQuantityChange(prod_id,quantity+1)}
-                className="px-3 py-1 bg-gray-200 rounded cursor-pointer">+</button>
+                className="px-3 py-1 bg-gray-200 rounded cursor-pointer dark:bg-gray-600 dark:text-gray-100">+</button>
         </div>
          <p className="text-center">₹{prod_price}</p>
 
         <p className="text-right font-semibold">₹{line_total}</p>
-         <button onClick={() => onDelete(prod_id)} className="text-red-600 cursor-pointer">✕</button>
+         <button onClick={() => onDelete(prod_id)} className="text-red-600 cursor-pointer dark:text-red-400">✕</button>
         
     </div>
 </div>

@@ -5,6 +5,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.database import Base, engine
 from fastapi.responses import JSONResponse
+from app.exception_handler import register_exception_handlers
 
 from app.models import category as category_model
 from app.models import products as product_model
@@ -32,6 +33,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+register_exception_handlers(app)
 
 app.include_router(categories_router.router)
 app.include_router(products_router.router)

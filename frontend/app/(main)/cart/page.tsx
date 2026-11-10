@@ -24,6 +24,7 @@ export default function Cart() {
   const [addressesLoaded, setAddressesLoaded] = useState(false)
   const [showPhoneModal, setShowPhoneModal] = useState(false)
   const [showAddressModal, setShowAddressModal] = useState(false)
+  const [error, setError] = useState('')
   useEffect(() => {
     
     fetchCart()
@@ -34,65 +35,56 @@ export default function Cart() {
  const fetchCart = async () => {
   try {
     setCart(await getCart())
-  } catch (err) {
+  } catch (err:unknown) {
     console.error('Failed fetching cart items:', err)
+    setError(err instanceof Error ? err.message : 'Could not load your cart')
   }
 }
 
 
-  const handleQuantityUpdate = async (prod_id: number, newQuantity: number) => {
+
+ const handleQuantityUpdate = async (prod_id: number, newQuantity: number) => {
+  setError('')
   try {
-    setCart(await updateCartQuantity( prod_id, newQuantity))
-  } catch (err: any) {
-    alert(err.message) 
+    setCart(await updateCartQuantity(prod_id, newQuantity))
+  } catch (err:unknown) {
+    setError(err instanceof Error ? err.message : 'Could not update the quantity')
   }
 }
 
- const handleDeleteItem = async (prod_id: number) => {
+const handleDeleteItem = async (prod_id: number) => {
+  setError('')
   try {
     setCart(await removeCartItem(prod_id))
-  } catch (err) {
+  } catch (err:unknown) {
     console.error('failed to delete the product', err)
+    setError(err instanceof Error ? err.message : 'Could not remove the item')
   }
 }
-
- const handlePlaceOrder = async () => {
+ 
+const handlePlaceOrder = async () => {
+  setError('')
   if (!addressesLoaded) return
-  
-  // no address yet: go and add one,  
+
   if (addresses.length === 0) {
     setShowAddressModal(true)
     return
   }
 
   if (selectedAddressId === null) {
-    <Modal isOpen={true}
-     onClose={()=>{false}}
-     title="Alert"
-    >
-      Please choose a delivery addresss
-    </Modal>
-    
+    setError('Please choose a delivery address')
     return
   }
 
   try {
-    try {
-  const me = await getUser()
-  if (!me.phone_no) {
-    setShowPhoneModal(true)
-    return
-  }
-} catch (err: any) {
-  alert(err.message)
-  return
-}
+    const me = await getUser()
+    if (!me.phone_no) {
+      setShowPhoneModal(true)
+      return
+    }
     router.push(`/payment?address=${selectedAddressId}`)
-   // await placeOrder(selectedAddressId)
-   // setCart({ items: [], subtotal: 0 })
-   // setIsSuccess(true)
-  } catch (err: any) {
-    alert(err.message)
+  } catch (err:unknown) {
+    setError(err instanceof Error ? err.message : 'Something went wrong')
   }
 }
 
@@ -100,7 +92,7 @@ const loadAddresses = async () => {
   try {
     const data = await getAddress()
     setAddresses(data)
-    const preferred = data.find((a) => a.is_default) ?? data[0]   // default first
+    const preferred = data.find((a) => a.is_default) ?? data[0]   
     setSelectedAddressId(preferred ? preferred.id : null)
   } catch (err) {
     console.error('unable to fetch addresses', err)
@@ -111,9 +103,9 @@ const loadAddresses = async () => {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold uppercase text-gray-500">Your Cart</h2>
-      
+      {error && <p className="text-sm text-red-600">{error}</p>}
       {cart.items.length === 0 ? (
-        <div className="p-8 bg-white rounded-xl text-center text-gray-500">
+        <div className="p-8 bg-white rounded-xl text-center text-gray-500  dark:border-gray-600 dark:bg-gray-800 ">
           No items in the cart!
         </div>
       ) : (

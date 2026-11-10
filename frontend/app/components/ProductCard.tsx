@@ -24,7 +24,7 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart,isA
   return (
     <div className="bg-white rounded-xl border border-gray-200 dark:border-gray-800  dark:bg-gray-700 overflow-hidden dark:hover:border-gray-500 dark:hover:shadow-lg dark:hover:shadow-white/10 shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
-        <div className="h-44 bg-gray-100 relative">
+        <div className="h-44 bg-gray-100 relative dark:bg-gray-600">
           {product.image_url ? (
             <img
               src={product.image_url}
@@ -32,7 +32,7 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart,isA
               className="w-full h-full object-contain"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm dark:text-gray-300">
               No Image Available
             </div>
           )}
@@ -40,7 +40,7 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart,isA
         <div className="p-4 space-y-2">
           <div className="flex justify-between items-start rounded-md">
             <h3 className="font-bold text-gray-900 dark:text-gray-200 text-lg">{product.prod_name}</h3>
-            <span className="text-green-600 font-bold">₹{product.prod_price}</span>
+            <span className="text-green-600 font-bold dark:text-green-400">₹{product.prod_price}</span>
           </div>
           {product.prod_description && (
             <p className="text-gray-500 dark:text-gray-300 text-sm line-clamp-2">{product.prod_description}</p>
@@ -61,26 +61,26 @@ export default function ProductCard({ product, onEdit, onDelete, onAddToCart,isA
       <div className="p-4 pt-0 flex space-x-2">      
         <button
           onClick={() => onEdit(product)}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-100"
         >
           Edit
         </button>
         <button
           onClick={() => onDelete(product.id)}
-          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
+          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105 dark:bg-red-950/50 dark:hover:bg-red-900/50 dark:text-red-400"
         >
           Delete
         </button>
         <button onClick={()=>onAddToCart(product.id)}
         disabled={isOutOfStock}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105">
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-100">
            {isOutOfStock? 'sold out':'Add To Cart'} 
         </button>
       </div>):(
       <div className="p-4 pt-0 flex space-x-2">  
       <button onClick={()=>onAddToCart(product.id)}
         disabled={isOutOfStock}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105">
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-100">
            {isOutOfStock? 'sold out':'Add To Cart'} 
         </button>
       </div>

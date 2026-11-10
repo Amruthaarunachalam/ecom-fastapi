@@ -11,6 +11,7 @@ import { WS_URL } from '@/app/lib/config'
 export default function OrderSummary() {
   const [orders, setOrders] = useState<Order[]>([])
   const [products, setProducts] = useState<Product[]>([])
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const token=localStorage.getItem('access_token')
@@ -31,22 +32,24 @@ export default function OrderSummary() {
     return () =>ws.close()
   }, [])
 
-  const fetchOrders = async () => {
-    try {
-      setOrders(await getUserOrders())
-    } catch (err) {
-      console.log('error fetching orders', err)
-    }
+ const fetchOrders = async () => {
+  try {
+    setOrders(await getUserOrders())
+    setError('')
+  } catch (err:unknown) {
+    console.error('error fetching orders', err)
+    setError(err instanceof Error ? err.message : 'Could not load your orders')
   }
+}
 
-  const fetchProducts = async () => {
-    try {
-      setProducts(await getProducts())
-    } catch (err) {
-      console.log('unable to fetch products', err)
-    }
+const fetchProducts = async () => {
+  try {
+    setError('')
+    setProducts(await getProducts())
+  } catch (err:unknown) {
+    setError(err instanceof Error ? err.message : 'unable to fetch products')    
   }
-
+}
   const findProduct = (prod_id: number) => products.find((p) => p.id === prod_id)
 
   return (
@@ -54,6 +57,7 @@ export default function OrderSummary() {
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Your Orders</h2>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Track and review your past orders.</p>
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       </div>
 
       {orders.length === 0 ? (

@@ -37,8 +37,8 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
   const [description, setDescription] = useState('');
 
   const [isAdmin,setIsAdmin]=useState(false)
-
-
+  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
    const router=useRouter()
 
   useEffect(() => {
@@ -62,15 +62,16 @@ const [deletingId,setDeletingId]=useState<number | null>(null);
     if (data.length > 0 && categoryId === 0) setCategoryId(data[0].id);
   } catch (err) {
     console.error('Failed fetching categories:', err);
+    setError(err instanceof Error ? err.message : 'Could not load categories');
   }
 };
-
 const fetchProducts = async (catId?: number | 'ALL') => {
   try {
     const targetCat = catId !== undefined ? catId : selectedCategory;
     setProducts(await getProducts(targetCat));
   } catch (err) {
     console.error('Failed fetching products:', err);
+    setError(err instanceof Error ? err.message : 'Could not load products');
   }
 };
 
@@ -88,6 +89,8 @@ const fetchProducts = async (catId?: number | 'ALL') => {
     setStock('');
     setColor('');
     setImageUrl('');
+    setFormError('');
+    setError('');
     setDescription('');
     setIsOpen(false);
   };
@@ -106,6 +109,8 @@ const fetchProducts = async (catId?: number | 'ALL') => {
 
   const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
+  setFormError('');
+
   const payload = {
     prod_name: prodName,
     category_id: Number(categoryId),
@@ -124,8 +129,8 @@ const fetchProducts = async (catId?: number | 'ALL') => {
     }
     resetForm();
     fetchProducts();
-  } catch (err: any) {
-    alert(err.message);
+  } catch (err) {
+    setFormError(err instanceof Error ? err.message : 'Could not save the product');
   }
 };
 
@@ -139,16 +144,17 @@ const fetchProducts = async (catId?: number | 'ALL') => {
   try {
     await deleteProducts(id);
     fetchProducts();
-  } catch (err: any) {
-    alert(err.message);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Could not delete the product');
   }
 };
   const handleAddToCart = async (id: number) => {
+  setError('');
   try {
-    await addToCart( id, 1);
+    await addToCart(id, 1);
     router.push('/cart');
-  } catch (err: any) {
-    alert(err.message);   
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Could not add to cart');
   }
 };
 
@@ -186,7 +192,9 @@ const fetchProducts = async (catId?: number | 'ALL') => {
                   </button></span>
                   </div>
              </div>):
-      (<ProductForm
+      (
+        <>
+      {formError && <p className="mb-2 text-sm text-red-600">{formError}</p>}<ProductForm
         categories={categories}
         editingId={editingId}
         prodName={prodName}
@@ -205,12 +213,14 @@ const fetchProducts = async (catId?: number | 'ALL') => {
         setDescription={setDescription}
         onSubmit={handleSubmit}
         onReset={resetForm}
-      />)}
+      />
+      </>)}
       </Modal>
 
       {/* 3. Product Grid displaying Product Cards */}
       <div>
         <h2 className="text-2xl font-bold mb-4 text-gray-800 uppercase font-sans">Products Catalog</h2>
+        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
         {products.length === 0 ? (
           <div className="p-8 bg-white rounded-xl text-center text-gray-500">
             No products found for this category.

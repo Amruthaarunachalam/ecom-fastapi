@@ -47,8 +47,8 @@ const handleSendOtp = async () => {
   try {
     await sendOtp()
     setOtpSent(true)
-  } catch (err: any) {
-    setError(err.message)
+  } catch (err: unknown) {
+    setError(err instanceof Error?err.message:"something went wrong")
   }
 }
 
@@ -61,8 +61,8 @@ const handleSendOtp = async () => {
         ? 'Payment successful! Order placed.'
         : 'Order placed! Pay on delivery.'
     )
-  } catch (err: any) {
-    setError(err.message)
+  } catch (err: unknown) {
+    setError(err instanceof Error?err.message:"something went wrong")
   }
 }
 
@@ -70,7 +70,7 @@ const handleSendOtp = async () => {
     <div className="max-w-md mx-auto space-y-4">
       <h2 className="text-2xl font-bold uppercase text-gray-500">Payment</h2>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+      <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100">
         <div className="flex justify-between font-semibold text-lg">
        <span>Total to pay</span>
           <span>₹{total}</span>
@@ -88,20 +88,20 @@ const handleSendOtp = async () => {
         {method === 'card' && (
           <div className="space-y-2 pt-2">
             <input
-              className="border rounded p-2 w-full"
+              className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
               placeholder="Card number (16 digits)"
               value={cardNumber}
               onChange={(e) => setCardNumber(e.target.value)}
             />
             <div className="flex gap-2">
               <input
-                className="border rounded p-2 w-full"
+                className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
                 placeholder="MM/YY"
                 value={expiry}
                 onChange={(e) => setExpiry(e.target.value)}
               />
               <input
-                className="border rounded p-2 w-full"
+                className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
                 placeholder="CVV"
                 type="password"
                 value={cvv}
@@ -112,7 +112,7 @@ const handleSendOtp = async () => {
           </div>
         )}
 
-        {error && <p className="text-red-600 text-center text-sm">{error}</p>}
+        {error && <p className="text-red-600 text-center text-sm dark:text-red-400">{error}</p>}
 
         {!otpSent ? (
   <button
@@ -123,9 +123,9 @@ const handleSendOtp = async () => {
   </button>
 ) : (
   <div className="space-y-2">
-    <p className="text-sm text-gray-500">Enter the 6-digit OTP</p>
+    <p className="text-sm text-gray-500 dark:text-gray-400">Enter the 6-digit OTP</p>
     <input
-      className="border rounded p-2 w-full"
+      className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:placeholder:text-gray-400"
       placeholder="OTP"
       maxLength={6}
       value={otp}
@@ -137,7 +137,7 @@ const handleSendOtp = async () => {
     >
       Verify & place order
     </button>
-    <button onClick={handleSendOtp} className="text-sm text-blue-600 hover:underline cursor-pointer">
+    <button onClick={handleSendOtp} className="text-sm text-blue-600 hover:underline cursor-pointer dark:text-blue-400">
       Resend OTP
     </button>
   </div>
@@ -157,4 +157,3 @@ const handleSendOtp = async () => {
     </div>
   )
 }
-

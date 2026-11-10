@@ -17,9 +17,9 @@ export default function CategoryCard({ category, onEdit, onDelete,isAdmin }: Cat
   return (
     <div className="bg-white rounded-xl border  dark:border-gray-800  dark:bg-gray-700 border-gray-200 dark:hover:border-gray-500 dark:hover:shadow-lg dark:hover:shadow-white/10  overflow-hidden shadow-sm flex flex-col justify-between hover:scale-105">
       <div>
-        <div className="h-44 bg-gray-100 relative">
+        <div className="h-44 bg-gray-100 relative dark:bg-gray-600">
           {category.cat_name && (
-            <div className="w-full h-full flex items-center justify-center text-black-400 text-sm">
+            <div className="w-full h-full flex items-center justify-center text-black-400 text-sm dark:text-gray-100">
               {category.cat_name}
             </div>
           )}
@@ -37,13 +37,13 @@ export default function CategoryCard({ category, onEdit, onDelete,isAdmin }: Cat
       <div className="p-4 pt-0 flex space-x-2">
         <button
           onClick={() => onEdit(category)}
-          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
+          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-gray-100"
         >
           Edit
         </button>
         <button
           onClick={() => onDelete(category.id)}
-          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105"
+          className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 py-1.5 rounded-md text-sm font-medium transition-colors cursor-pointer hover:scale-105 dark:bg-red-950/50 dark:hover:bg-red-900/50 dark:text-red-400"
         >
           Delete
         </button>
