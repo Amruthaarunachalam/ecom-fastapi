@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from app.repository.address_repo import get_user_address,create_address,get_address
 from app.schema.address import AddAddress,AddressResponse
 from app.repository.user_repo import get_user
-from app.exceptions import NotFoundException
+from app.exceptions import NotFoundException,ForbiddenException
 
 def creating_address(user_id,add:AddAddress,db:Session):
     user_db=get_user(user_id,db)
@@ -17,7 +17,7 @@ def get_my_address(user_id:int,address_id:int,db:Session):
     if address is None:
         raise NotFoundException("the address is not found")
     if address.user_id!=user_id:
-        raise HTTPException(status_code=404,detail='the address does not belong to you')
+        raise ForbiddenException('the address does not belong to you')
     return address
 
 def updating_address(user_id:int,address_id:int,add:AddAddress,db:Session):
