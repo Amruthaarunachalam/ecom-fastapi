@@ -23,8 +23,16 @@ export default function Payment() {
 
   useEffect(()=>{
     const loadTotal=async()=>{
+       if (!addressId) {
+        router.replace('/cart')
+      return
+    }
         try{
             const cart=await getCart()
+            if (cart.items.length === 0) {
+               router.replace('/cart')          // nothing to pay for
+               return
+              }
             setTotal(cart.subtotal)
         }
         catch(err){

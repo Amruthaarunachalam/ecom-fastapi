@@ -18,7 +18,7 @@ def send_otp(user_id: int,email:str):
     otps[user_id] = otp
 
     msg = EmailMessage()
-    msg["Subject"] = "Your OTP for order verification"
+    msg["Subject"] = "Your OTP for verification"
     msg["From"] = SENDER_EMAIL_ADDRESS
     msg["To"] = email
     msg.set_content(f"Your OTP is {otp}. Do not share it with anyone.")
